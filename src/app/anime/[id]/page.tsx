@@ -1,0 +1,149 @@
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp } from 'lucide-react';
+
+import type { JikanAPIResponse, Anime, AnimeRecommendation } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { AnimeGrid } from '@/components/anime/anime-grid';
+
+interface AnimePageProps {
+  params: {
+    id: string;
+  };
+}
+
+async function getAnimeDetails(id: string): Promise<Anime | null> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/full`);
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
+      return null;
+    }
+    const data: JikanAPIResponse<Anime> = await res.json();
+    return data.data;
+  } catch (error) {
+    console.error(`Error fetching anime ${id}:`, error);
+    return null;
+  }
+}
+
+async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[]> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/recommendations`);
+    if (!res.ok) {
+      console.error(`Failed to fetch recommendations for ${id}:`, res.status, await res.text());
+      return [];
+    }
+    const data: JikanAPIResponse<AnimeRecommendation[]> = await res.json();
+    return data.data;
+  } catch (error) {
+    console.error(`Error fetching recommendations for ${id}:`, error);
+    return [];
+  }
+}
+
+export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
+  const anime = await getAnimeDetails(params.id);
+  if (!anime) {
+    return { title: 'Anime not found' };
+  }
+  return {
+    title: `${anime.title_english || anime.title} - NeonIME`,
+    description: anime.synopsis?.substring(0, 150) || 'Anime details on NeonIME',
+  };
+}
+
+const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: string, value: string | number | null | undefined }) => {
+    if (!value) return null;
+    const Icon = icon;
+    return (
+        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-card text-center">
+            <Icon className="w-6 h-6 mb-2 text-accent" />
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="font-bold font-headline text-lg">{value}</p>
+        </div>
+    );
+};
+
+export default async function AnimePage({ params }: AnimePageProps) {
+  const [anime, recommendations] = await Promise.all([
+    getAnimeDetails(params.id),
+    getAnimeRecommendations(params.id),
+  ]);
+
+  if (!anime) {
+    notFound();
+  }
+
+  const recommendationList = recommendations.map(rec => ({
+    mal_id: rec.entry.mal_id,
+    title: rec.entry.title,
+    images: rec.entry.images,
+  }));
+  
+  return (
+    <div className="space-y-12">
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="md:col-span-1">
+          <Image
+            src={anime.images.webp.large_image_url || anime.images.jpg.large_image_url}
+            alt={`Poster for ${anime.title}`}
+            width={300}
+            height={450}
+            className="rounded-lg shadow-lg w-full"
+            priority
+            data-ai-hint="anime poster"
+          />
+        </div>
+        <div className="md:col-span-3 space-y-4">
+          <h1 className="text-4xl font-bold font-headline text-primary">{anime.title_english || anime.title}</h1>
+          <p className="text-xl text-muted-foreground">{anime.title_japanese}</p>
+          <div className="flex flex-wrap gap-2">
+            {anime.genres.map((genre) => (
+              <Badge key={genre.mal_id} variant="secondary">{genre.name}</Badge>
+            ))}
+            {anime.themes.map((theme) => (
+              <Badge key={theme.mal_id} variant="outline">{theme.name}</Badge>
+            ))}
+          </div>
+          <Separator className="my-4"/>
+          <p className="text-foreground/90 leading-relaxed font-body">{anime.synopsis}</p>
+        </div>
+      </section>
+      
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <InfoBadge icon={Star} label="Score" value={anime.score ? `${anime.score} / 10` : 'N/A'} />
+        <InfoBadge icon={BarChart} label="Rank" value={anime.rank ? `#${anime.rank}` : 'N/A'} />
+        <InfoBadge icon={ThumbsUp} label="Popularity" value={anime.popularity ? `#${anime.popularity}` : 'N/A'} />
+        <InfoBadge icon={anime.type === 'TV' ? Tv : Film} label="Type" value={anime.type} />
+        <InfoBadge icon={BookOpen} label="Episodes" value={anime.episodes || 'N/A'} />
+        <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
+      </section>
+
+      {anime.trailer?.embed_url && (
+        <section>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Trailer</h2>
+          <div className="aspect-video">
+            <iframe
+              src={anime.trailer.embed_url.replace('autoplay=1', 'autoplay=0')}
+              title="Anime Trailer"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
+            ></iframe>
+          </div>
+        </section>
+      )}
+
+      {recommendationList.length > 0 && (
+        <section>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">You Might Also Like</h2>
+          <AnimeGrid animeList={recommendationList} />
+        </section>
+      )}
+    </div>
+  );
+}
