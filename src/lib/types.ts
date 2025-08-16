@@ -217,3 +217,8 @@ export interface AnimeRelation {
   relation: string;
   entry: RelationEntry[];
 }
+
+export interface AnimeTheme {
+  openings: string[];
+  endings: string[];
+}
