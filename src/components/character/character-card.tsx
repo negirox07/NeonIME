@@ -11,7 +11,7 @@ interface CharacterCardProps {
 
 export function CharacterCard({ character }: CharacterCardProps) {
   return (
-    <Link href={character.url} target="_blank" rel="noopener noreferrer" className="group block">
+    <Link href={`/characters/${character.mal_id}`} className="group block">
       <Card className="h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
         <CardHeader className="p-0">
           <div className="aspect-[2/3] relative">

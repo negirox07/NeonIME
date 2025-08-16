@@ -76,6 +76,55 @@ export interface Anime {
   demographics: Genre[];
 }
 
+export interface Manga {
+    mal_id: number;
+    url: string;
+    images: {
+        jpg: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
+        webp: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
+    };
+    title: string;
+    title_english: string | null;
+    title_japanese: string;
+    type: string;
+    chapters: number | null;
+    volumes: number | null;
+    status: string;
+    publishing: boolean;
+    published: {
+        from: string;
+        to: string | null;
+        prop: {
+            from: { day: number; month: number; year: number };
+            to: { day: number | null; month: number | null; year: number | null };
+        };
+        string: string;
+    };
+    score: number | null;
+    scored_by: number | null;
+    rank: number;
+    popularity: number;
+    members: number;
+    favorites: number;
+    synopsis: string | null;
+    background: string | null;
+    authors: Genre[];
+    serializations: Genre[];
+    genres: Genre[];
+    explicit_genres: Genre[];
+    themes: Genre[];
+    demographics: Genre[];
+}
+
+
 export interface Genre {
   mal_id: number;
   type: string;
@@ -122,6 +171,27 @@ export interface Character {
   nicknames: string[];
   favorites: number;
   about: string | null;
+  anime?: {
+    role: string;
+    anime: Anime;
+  }[];
+  manga?: {
+    role: string;
+    manga: Manga;
+  }[];
+  voices?: {
+    language: string;
+    person: {
+        mal_id: number;
+        url: string;
+        images: {
+            jpg: {
+                image_url: string;
+            }
+        },
+        name: string;
+    }
+  }[]
 }
 
 export interface AnimeCharacter {
