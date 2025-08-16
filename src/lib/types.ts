@@ -285,3 +285,8 @@ export interface AnimeVideo {
     promo: PromoVideo[];
     episodes: VideoEpisode[];
 }
+
+export interface ExternalLink {
+  name: string;
+  url: string;
+}

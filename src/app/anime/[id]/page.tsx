@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music, Clapperboard, MessageSquare, Video } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music, Clapperboard, MessageSquare, Video, PlayCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 import type { JikanAPIResponse, Anime } from '@/lib/types';
@@ -210,6 +210,28 @@ export default async function AnimePage({ params }: AnimePageProps) {
             <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/forum`}>
                     View Topics <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <LinkIcon /> External
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/external`}>
+                    View Links <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <PlayCircle /> Streaming
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/streaming`}>
+                    View Services <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
             </Button>
         </Card>
