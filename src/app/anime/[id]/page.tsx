@@ -1,13 +1,16 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp, Users } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp, Users, Newspaper } from 'lucide-react';
+import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation, Character } from '@/lib/types';
+import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { CharacterCard } from '@/components/anime/character-card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 interface AnimePageProps {
   params: {
@@ -62,6 +65,22 @@ async function getAnimeCharacters(id: string): Promise<Character[]> {
   }
 }
 
+async function getAnimeNews(id: string): Promise<News[]> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/news`);
+    if (!res.ok) {
+      console.error(`Failed to fetch news for ${id}:`, res.status, await res.text());
+      return [];
+    }
+    const data: JikanAPIResponse<News[]> = await res.json();
+    return data.data.slice(0, 6); // Get latest 6 news
+  } catch (error) {
+    console.error(`Error fetching news for ${id}:`, error);
+    return [];
+  }
+}
+
+
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
   if (!anime) {
@@ -86,10 +105,11 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, characters] = await Promise.all([
+  const [anime, recommendations, characters, news] = await Promise.all([
     getAnimeDetails(params.id),
     getAnimeRecommendations(params.id),
     getAnimeCharacters(params.id),
+    getAnimeNews(params.id),
   ]);
 
   if (!anime) {
@@ -150,6 +170,38 @@ export default async function AnimePage({ params }: AnimePageProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {characters.map(character => (
               <CharacterCard key={character.character.mal_id} character={character} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {news.length > 0 && (
+        <section>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+            <Newspaper />
+            Recent News
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {news.map(article => (
+              <Link href={article.url} key={article.mal_id} target="_blank" rel="noopener noreferrer" className="group block">
+                <Card className="h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
+                  <div className="aspect-video relative">
+                     <Image
+                        src={article.images.jpg.image_url}
+                        alt={article.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        data-ai-hint="news article"
+                      />
+                  </div>
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">{format(new Date(article.date), 'PPP')}</p>
+                    <h3 className="font-bold font-headline line-clamp-2 text-lg text-foreground/90 group-hover:text-primary">{article.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{article.excerpt}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </section>
