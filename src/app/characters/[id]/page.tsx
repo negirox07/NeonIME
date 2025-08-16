@@ -1,9 +1,10 @@
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { JikanAPIResponse, Character, Manga, Anime } from '@/lib/types';
-import { BookOpen, Clapperboard, Heart, Star } from 'lucide-react';
+import { BookOpen, Clapperboard, Heart, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -107,24 +108,29 @@ export default async function CharacterPage({ params }: CharacterPageProps) {
                 </div>
             </section>
             
-            {animeography.length > 0 && (
-                <section>
-                    <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-                        <Clapperboard /> Animeography
-                    </h2>
-                    <AnimeGrid animeList={animeography} />
-                </section>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <Clapperboard /> Anime Appearances
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/characters/${character.mal_id}/anime`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
 
-            {mangaography.length > 0 && (
-                 <section>
-                    <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-                        <BookOpen /> Mangaography
-                    </h2>
-                    {/* This should be a MangaGrid, but we can reuse AnimeGrid for now as the structure is similar */}
-                    <AnimeGrid animeList={mangaography} />
-                </section>
-            )}
+                <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <BookOpen /> Manga Appearances
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/characters/${character.mal_id}/manga`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+            </div>
         </div>
     )
 }

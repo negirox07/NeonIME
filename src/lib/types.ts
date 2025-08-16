@@ -194,6 +194,11 @@ export interface Character {
   }[]
 }
 
+export interface CharacterAnime {
+  role: string;
+  anime: Anime;
+}
+
 export interface AnimeCharacter {
   character: {
     mal_id: number;
