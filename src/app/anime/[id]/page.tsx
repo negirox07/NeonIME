@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp, Users } from 'lucide-react';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation } from '@/lib/types';
+import type { JikanAPIResponse, Anime, AnimeRecommendation, Character } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimeGrid } from '@/components/anime/anime-grid';
+import { CharacterCard } from '@/components/anime/character-card';
 
 interface AnimePageProps {
   params: {
@@ -45,6 +46,22 @@ async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[
   }
 }
 
+async function getAnimeCharacters(id: string): Promise<Character[]> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/characters`);
+    if (!res.ok) {
+      console.error(`Failed to fetch characters for ${id}:`, res.status, await res.text());
+      return [];
+    }
+    const data: JikanAPIResponse<Character[]> = await res.json();
+    // Only show main characters
+    return data.data.filter(c => c.role === 'Main').slice(0, 12);
+  } catch (error) {
+    console.error(`Error fetching characters for ${id}:`, error);
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
   if (!anime) {
@@ -69,9 +86,10 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations] = await Promise.all([
+  const [anime, recommendations, characters] = await Promise.all([
     getAnimeDetails(params.id),
     getAnimeRecommendations(params.id),
+    getAnimeCharacters(params.id),
   ]);
 
   if (!anime) {
@@ -122,6 +140,20 @@ export default async function AnimePage({ params }: AnimePageProps) {
         <InfoBadge icon={BookOpen} label="Episodes" value={anime.episodes || 'N/A'} />
         <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
       </section>
+
+      {characters.length > 0 && (
+        <section>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+            <Users />
+            Main Characters
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {characters.map(character => (
+              <CharacterCard key={character.character.mal_id} character={character} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {anime.trailer?.embed_url && (
         <section>
