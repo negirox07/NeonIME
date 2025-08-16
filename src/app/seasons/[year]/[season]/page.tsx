@@ -29,8 +29,8 @@ async function getSeasonAnime(year: string, season: string): Promise<Anime[]> {
   }
 }
 
-export async function generateMetadata({ params }: SeasonPageProps): Promise<Metadata> {
-  const { year, season } = params;
+export async function generateMetadata({ params }: { params: Promise<SeasonPageProps['params']> }): Promise<Metadata> {
+  const { year, season } = await params;
   const capitalizedSeason = season.charAt(0).toUpperCase() + season.slice(1);
   return {
     title: `${capitalizedSeason} ${year} Anime - NeonIME`,
