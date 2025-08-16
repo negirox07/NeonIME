@@ -136,3 +136,8 @@ export interface Character {
     language: string;
   }[];
 }
+
+export interface Season {
+  year: number;
+  seasons: string[];
+}

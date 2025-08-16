@@ -8,6 +8,7 @@ export function Nav() {
   const pathname = usePathname();
   const navItems = [
     { href: '/', label: 'Home' },
+    { href: '/seasons', label: 'Seasons' },
     { href: '/recommendations', label: 'AI Recs' },
   ];
 
@@ -19,7 +20,9 @@ export function Nav() {
           href={item.href}
           className={cn(
             'transition-colors hover:text-foreground/80',
-            pathname === item.href ? 'text-foreground font-semibold' : 'text-foreground/60'
+            (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) 
+              ? 'text-foreground font-semibold' 
+              : 'text-foreground/60'
           )}
         >
           {item.label}
