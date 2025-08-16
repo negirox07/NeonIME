@@ -205,3 +205,15 @@ export interface StaffMember {
   };
   positions: string[];
 }
+
+export interface RelationEntry {
+  mal_id: number;
+  type: string;
+  name: string;
+  url: string;
+}
+
+export interface AnimeRelation {
+  relation: string;
+  entry: RelationEntry[];
+}
