@@ -9,12 +9,8 @@ interface MangaAppearanceCardProps {
 }
 
 export function MangaAppearanceCard({ appearance }: MangaAppearanceCardProps) {
-  // A placeholder link as manga pages are not implemented yet.
-  // In a future step, this would link to `/manga/${appearance.manga.mal_id}`
-  const mangaLink = `https://myanimelist.net/manga/${appearance.manga.mal_id}`;
-
   return (
-    <Link href={mangaLink} target="_blank" rel="noopener noreferrer" className="group block h-full">
+    <Link href={`/manga/${appearance.manga.mal_id}`} className="group block h-full">
       <Card className="h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1 flex flex-col">
         <CardHeader className="p-0">
           <div className="aspect-[2/3] relative">
