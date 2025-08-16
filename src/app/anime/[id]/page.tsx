@@ -1,13 +1,12 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2 } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation, News } from '@/lib/types';
+import type { JikanAPIResponse, Anime, News } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -32,21 +31,6 @@ async function getAnimeDetails(id: string): Promise<Anime | null> {
   } catch (error) {
     console.error(`Error fetching anime ${id}:`, error);
     return null;
-  }
-}
-
-async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/recommendations`);
-    if (!res.ok) {
-      console.error(`Failed to fetch recommendations for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<AnimeRecommendation[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching recommendations for ${id}:`, error);
-    return [];
   }
 }
 
@@ -89,21 +73,14 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, news] = await Promise.all([
+  const [anime, news] = await Promise.all([
     getAnimeDetails(params.id),
-    getAnimeRecommendations(params.id),
     getAnimeNews(params.id),
   ]);
 
   if (!anime) {
     notFound();
   }
-
-  const recommendationList = recommendations.map(rec => ({
-    mal_id: rec.entry.mal_id,
-    title: rec.entry.title,
-    images: rec.entry.images,
-  }));
   
   return (
     <div className="space-y-12">
@@ -144,51 +121,50 @@ export default async function AnimePage({ params }: AnimePageProps) {
         <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <section>
-            <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-              <Users />
-              Characters
-            </h2>
-            <div className="text-center">
-               <Button asChild>
-                  <Link href={`/anime/${anime.mal_id}/characters`}>
-                      View All Characters
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                  </Link>
-               </Button>
-            </div>
-          </section>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Users /> Characters
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/characters`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
 
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <Briefcase />
-            Staff
-          </h2>
-          <div className="text-center">
-              <Button asChild>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Briefcase /> Staff
+            </h3>
+            <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/staff`}>
-                    View All Staff
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
-              </Button>
-          </div>
-        </section>
+            </Button>
+        </Card>
 
-         <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <BarChartIcon />
-            Statistics
-          </h2>
-          <div className="text-center">
-              <Button asChild>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <BarChartIcon /> Statistics
+            </h3>
+            <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/statistics`}>
-                    View Statistics
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
-              </Button>
-          </div>
-        </section>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Wand2 /> Recommendations
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/recommendations`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
       </div>
 
       {news.length > 0 && (
@@ -235,13 +211,6 @@ export default async function AnimePage({ params }: AnimePageProps) {
               className="w-full h-full rounded-lg"
             ></iframe>
           </div>
-        </section>
-      )}
-
-      {recommendationList.length > 0 && (
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">You Might Also Like</h2>
-          <AnimeGrid animeList={recommendationList} />
         </section>
       )}
     </div>
