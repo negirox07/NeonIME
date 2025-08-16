@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { JikanAPIResponse, Person } from '@/lib/types';
-import { Heart, Clapperboard, Briefcase, ChevronRight, Mic2 } from 'lucide-react';
+import { Heart, Clapperboard, Briefcase, ChevronRight, Mic2, BookOpen, Image as ImageIcon } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -95,7 +95,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
                 </div>
             </section>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                  <Card className="flex flex-col items-center justify-center p-6 text-center">
                     <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
                         <Mic2 /> Voice Acting Roles
@@ -114,6 +114,26 @@ export default async function PersonPage({ params }: PersonPageProps) {
                     <Button asChild>
                         <Link href={`/people/${person.mal_id}/anime`}>
                             View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+                <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <BookOpen /> Manga Works
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/manga`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+                 <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <ImageIcon /> Pictures
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/pictures`}>
+                            View Gallery <ChevronRight className="w-4 h-4 ml-2" />
                         </Link>
                     </Button>
                 </Card>

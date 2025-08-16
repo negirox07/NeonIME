@@ -223,6 +223,11 @@ export interface CharacterManga {
   manga: Manga;
 }
 
+export interface PersonManga {
+  position: string;
+  manga: Manga;
+}
+
 export interface VoiceActor {
     language: string;
     person: {
