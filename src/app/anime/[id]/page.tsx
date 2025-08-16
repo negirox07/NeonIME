@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music, Clapperboard, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, News } from '@/lib/types';
+import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,21 +34,6 @@ async function getAnimeDetails(id: string): Promise<Anime | null> {
   }
 }
 
-async function getAnimeNews(id: string): Promise<News[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/news`);
-    if (!res.ok) {
-      console.error(`Failed to fetch news for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<News[]> = await res.json();
-    return data.data.slice(0, 6); // Get latest 6 news
-  } catch (error) {
-    console.error(`Error fetching news for ${id}:`, error);
-    return [];
-  }
-}
-
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
   if (!anime) {
@@ -73,10 +58,7 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, news] = await Promise.all([
-    getAnimeDetails(params.id),
-    getAnimeNews(params.id),
-  ]);
+  const anime = await getAnimeDetails(params.id);
 
   if (!anime) {
     notFound();
@@ -198,43 +180,36 @@ export default async function AnimePage({ params }: AnimePageProps) {
                 </Link>
             </Button>
         </Card>
-      </div>
 
-      {news.length > 0 && (
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <Newspaper />
-            Recent News
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map(article => (
-              <Link href={article.url} key={article.mal_id} target="_blank" rel="noopener noreferrer" className="group block">
-                <Card className="h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
-                  <div className="aspect-video relative">
-                     <Image
-                        src={article.images.jpg.image_url}
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        data-ai-hint="news article"
-                      />
-                  </div>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground mb-1">{format(new Date(article.date), 'PPP')}</p>
-                    <h3 className="font-bold font-headline line-clamp-2 text-lg text-foreground/90 group-hover:text-primary">{article.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{article.excerpt}</p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Newspaper /> News
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/news`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <MessageSquare /> Forum
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/forum`}>
+                    View Topics <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+      </div>
 
       {anime.trailer?.embed_url && (
         <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Trailer</h2>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+            <Clapperboard />
+            Trailer
+          </h2>
           <div className="aspect-video">
             <iframe
               src={anime.trailer.embed_url.replace('autoplay=1', 'autoplay=0')}
