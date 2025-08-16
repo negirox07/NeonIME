@@ -9,7 +9,7 @@ export function Nav() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/seasons', label: 'Seasons' },
-    { href: '/recommendations', label: 'AI Recs' },
+    { href: '/characters', label: 'Characters' },
   ];
 
   return (
