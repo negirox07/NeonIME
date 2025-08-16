@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Wand2 } from "lucide-react"
+import { Menu } from "lucide-react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,6 @@ export function MobileNav() {
                                     : 'text-muted-foreground'
                             )}
                         >
-                          {item.label === 'AI Recs' && <Wand2 className="w-5 h-5"/>}
                           {item.label}
                         </Link>
                     ))}
