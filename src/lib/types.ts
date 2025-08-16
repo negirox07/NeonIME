@@ -310,6 +310,8 @@ export interface AnimeStatistics {
   }[];
 }
 
+export interface MangaStatistics extends AnimeStatistics {}
+
 export interface StaffMember {
   person: {
     mal_id: number;
