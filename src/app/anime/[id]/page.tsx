@@ -4,13 +4,12 @@ import type { Metadata } from 'next';
 import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News, AnimeStatistics } from '@/lib/types';
+import type { JikanAPIResponse, Anime, AnimeRecommendation, News } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { StatisticsChart } from '@/components/anime/statistics-chart';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
@@ -66,22 +65,6 @@ async function getAnimeNews(id: string): Promise<News[]> {
   }
 }
 
-async function getAnimeStatistics(id: string): Promise<AnimeStatistics | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/statistics`);
-    if (!res.ok) {
-      console.error(`Failed to fetch statistics for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<AnimeStatistics> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching statistics for ${id}:`, error);
-    return null;
-  }
-}
-
-
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
   if (!anime) {
@@ -106,11 +89,10 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, news, statistics] = await Promise.all([
+  const [anime, recommendations, news] = await Promise.all([
     getAnimeDetails(params.id),
     getAnimeRecommendations(params.id),
     getAnimeNews(params.id),
-    getAnimeStatistics(params.id),
   ]);
 
   if (!anime) {
@@ -162,13 +144,7 @@ export default async function AnimePage({ params }: AnimePageProps) {
         <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
       </section>
 
-      {statistics && (
-        <section>
-          <StatisticsChart statistics={statistics} />
-        </section>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <section>
             <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
               <Users />
@@ -193,6 +169,21 @@ export default async function AnimePage({ params }: AnimePageProps) {
               <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/staff`}>
                     View All Staff
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+          </div>
+        </section>
+
+         <section>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+            <BarChartIcon />
+            Statistics
+          </h2>
+          <div className="text-center">
+              <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/statistics`}>
+                    View Statistics
                     <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
