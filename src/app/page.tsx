@@ -35,11 +35,29 @@ async function getPopularAnime(): Promise<Anime[]> {
   }
 }
 
+async function getUpcomingAnime(): Promise<Anime[]> {
+  try {
+   const res = await fetch('https://api.jikan.moe/v4/top/anime?filter=upcoming', {
+     next: { revalidate: 86400 } // Revalidate every day
+   });
+   if (!res.ok) {
+     console.error('Failed to fetch upcoming anime:', res.status, await res.text());
+     return [];
+   }
+   const data: JikanAPIResponse<Anime[]> = await res.json();
+   return data.data;
+ } catch (error) {
+   console.error('Error fetching upcoming anime:', error);
+   return [];
+ }
+}
+
 
 export default async function HomePage() {
-  const [trendingAnime, popularAnime] = await Promise.all([
+  const [trendingAnime, popularAnime, upcomingAnime] = await Promise.all([
     getTrendingAnime(),
     getPopularAnime(),
+    getUpcomingAnime(),
   ]);
 
   return (
@@ -59,6 +77,15 @@ export default async function HomePage() {
           <AnimeGrid animeList={popularAnime} />
         ) : (
           <p>Could not load popular anime. Please try again later.</p>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Top Upcoming</h2>
+        {upcomingAnime.length > 0 ? (
+          <AnimeGrid animeList={upcomingAnime} />
+        ) : (
+          <p>Could not load upcoming anime. Please try again later.</p>
         )}
       </section>
     </div>
