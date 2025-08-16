@@ -1,37 +1,36 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Users } from 'lucide-react';
-import type { JikanAPIResponse, AnimeCharacter, Anime } from '@/lib/types';
+import { Users, ChevronLeft } from 'lucide-react';
+import type { JikanAPIResponse, Manga, AnimeCharacter } from '@/lib/types';
 import { CharacterCard } from '@/components/anime/character-card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
-interface CharactersPageProps {
+interface MangaCharactersPageProps {
   params: {
     id: string;
   };
 }
 
-async function getAnimeDetails(id: string): Promise<Anime | null> {
+async function getMangaDetails(id: string): Promise<Manga | null> {
     try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
+      const res = await fetch(`https://api.jikan.moe/v4/manga/${id}`);
       if (!res.ok) {
         if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
+        console.error(`Failed to fetch manga ${id}:`, res.status, await res.text());
         return null;
       }
-      const data: JikanAPIResponse<Anime> = await res.json();
+      const data: JikanAPIResponse<Manga> = await res.json();
       return data.data;
     } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
+      console.error(`Error fetching manga ${id}:`, error);
       return null;
     }
   }
 
-async function getAnimeCharacters(id: string): Promise<AnimeCharacter[]> {
+async function getMangaCharacters(id: string): Promise<AnimeCharacter[]> {
   try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/characters`);
+    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/characters`);
     if (!res.ok) {
       console.error(`Failed to fetch characters for ${id}:`, res.status, await res.text());
       return [];
@@ -44,22 +43,22 @@ async function getAnimeCharacters(id: string): Promise<AnimeCharacter[]> {
   }
 }
 
-export async function generateMetadata({ params }: CharactersPageProps): Promise<Metadata> {
-    const anime = await getAnimeDetails(params.id);
-    if (!anime) {
+export async function generateMetadata({ params }: MangaCharactersPageProps): Promise<Metadata> {
+    const manga = await getMangaDetails(params.id);
+    if (!manga) {
       return { title: 'Characters not found' };
     }
     return {
-      title: `Characters for ${anime.title_english || anime.title} - NeonIME`,
-      description: `Browse characters from ${anime.title_english || anime.title}.`,
+      title: `Characters for ${manga.title_english || manga.title} - NeonIME`,
+      description: `Browse characters from ${manga.title_english || manga.title}.`,
     };
   }
 
-export default async function CharactersPage({ params }: CharactersPageProps) {
-  const anime = await getAnimeDetails(params.id);
-  const characters = await getAnimeCharacters(params.id);
+export default async function MangaCharactersPage({ params }: MangaCharactersPageProps) {
+  const manga = await getMangaDetails(params.id);
+  const characters = await getMangaCharacters(params.id);
 
-  if (!anime) {
+  if (!manga) {
     notFound();
   }
 
@@ -68,12 +67,12 @@ export default async function CharactersPage({ params }: CharactersPageProps) {
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                 <Users />
-                Characters for {anime.title_english || anime.title}
+                Characters for {manga.title_english || manga.title}
             </h1>
             <Button asChild variant="outline">
-                <Link href={`/anime/${params.id}`}>
+                <Link href={`/manga/${params.id}`}>
                     <ChevronLeft className="w-4 h-4 mr-2"/>
-                    Back to Anime
+                    Back to Manga
                 </Link>
             </Button>
         </div>
@@ -84,7 +83,7 @@ export default async function CharactersPage({ params }: CharactersPageProps) {
           ))}
         </div>
       ) : (
-        <p>No characters found for this anime.</p>
+        <p>No characters found for this manga.</p>
       )}
     </section>
   );

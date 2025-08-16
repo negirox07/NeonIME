@@ -4,14 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
+export const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/seasons', label: 'Seasons' },
+  { href: '/manga', label: 'Manga' },
+  { href: '/characters', label: 'Characters' },
+  { href: '/people', label: 'People' },
+];
+
 export function Nav() {
   const pathname = usePathname();
-  const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/seasons', label: 'Seasons' },
-    { href: '/characters', label: 'Characters' },
-    { href: '/people', label: 'People' },
-  ];
 
   return (
     <nav className="flex items-center gap-6 text-sm">

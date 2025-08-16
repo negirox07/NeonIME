@@ -2,11 +2,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { JikanAPIResponse, Person } from '@/lib/types';
-import { Heart, Clapperboard, Briefcase } from 'lucide-react';
+import { Heart, Clapperboard, Briefcase, ChevronRight, Mic2, BookOpen, Image as ImageIcon } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface PersonPageProps {
   params: {
@@ -47,10 +48,6 @@ export default async function PersonPage({ params }: PersonPageProps) {
     if (!person) {
         notFound();
     }
-
-    const voiceRoles = person.voices || [];
-    const animeStaff = person.anime || [];
-    const mangaStaff = person.manga || [];
 
     return (
         <div className="space-y-12">
@@ -98,75 +95,49 @@ export default async function PersonPage({ params }: PersonPageProps) {
                 </div>
             </section>
             
-            {voiceRoles.length > 0 && (
-                <section>
-                    <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-                        <Clapperboard /> Voice Acting Roles
-                    </h2>
-                    <div className="space-y-4">
-                        {voiceRoles.slice(0, 10).map(role => (
-                            <Link href={`/anime/${role.anime.mal_id}`} key={`${role.anime.mal_id}-${role.character.mal_id}`} className="group block">
-                                <Card className="transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
-                                    <CardContent className="p-4 flex items-center gap-4">
-                                        <Image src={role.anime.images.webp.image_url} alt={role.anime.title} width={40} height={60} className="rounded-md" data-ai-hint="anime poster" />
-                                        <div className='flex-1'>
-                                            <p className="font-bold text-foreground/90 group-hover:text-primary">{role.anime.title}</p>
-                                            <p className="text-sm text-muted-foreground">{role.character.name} ({role.role})</p>
-                                        </div>
-                                         <Image src={role.character.images.webp.image_url} alt={role.character.name} width={40} height={60} className="rounded-md" data-ai-hint="anime character" />
-                                    </CardContent>
-                                </Card>
-                             </Link>
-                        ))}
-                    </div>
-                </section>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                 <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <Mic2 /> Voice Acting Roles
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/voices`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
 
-            {animeStaff.length > 0 && (
-                <section>
-                    <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-                        <Briefcase /> Anime Staff Positions
-                    </h2>
-                    <div className="space-y-4">
-                        {animeStaff.slice(0,10).map(staff => (
-                             <Link href={`/anime/${staff.anime.mal_id}`} key={`${staff.anime.mal_id}-${staff.position}`} className="group block">
-                                <Card className="transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
-                                    <CardContent className="p-4 flex items-center gap-4">
-                                        <Image src={staff.anime.images.webp.image_url} alt={staff.anime.title} width={40} height={60} className="rounded-md" data-ai-hint="anime poster" />
-                                        <div className='flex-1'>
-                                            <p className="font-bold text-foreground/90 group-hover:text-primary">{staff.anime.title}</p>
-                                            <p className="text-sm text-muted-foreground">{staff.position}</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-             {mangaStaff.length > 0 && (
-                <section>
-                    <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-                        <Briefcase /> Manga Staff Positions
-                    </h2>
-                    <div className="space-y-4">
-                        {mangaStaff.slice(0,10).map(staff => (
-                             <a href={staff.manga.url} target="_blank" rel="noopener noreferrer" key={`${staff.manga.mal_id}-${staff.position}`} className="group block">
-                                <Card className="transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
-                                    <CardContent className="p-4 flex items-center gap-4">
-                                        <Image src={staff.manga.images.webp.image_url} alt={staff.manga.title} width={40} height={60} className="rounded-md" data-ai-hint="manga cover" />
-                                        <div className='flex-1'>
-                                            <p className="font-bold text-foreground/90 group-hover:text-primary">{staff.manga.title}</p>
-                                            <p className="text-sm text-muted-foreground">{staff.position}</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            )}
+                 <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <Briefcase /> Anime Staff
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/anime`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+                <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <BookOpen /> Manga Works
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/manga`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+                 <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <ImageIcon /> Pictures
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/people/${person.mal_id}/pictures`}>
+                            View Gallery <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+            </div>
         </div>
     )
 }

@@ -5,8 +5,11 @@ import { Toaster } from '@/components/ui/toaster';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'NeonIME - Your Anime Universe',
-  description: 'An SEO-friendly and responsive anime browsing web application, powered by the Jikan API, designed for discovering and exploring anime.',
+  title: {
+    default: 'NeonIME - Your Anime & Manga Universe',
+    template: '%s - NeonIME',
+  },
+  description: 'An SEO-friendly and responsive anime and manga browsing web application, powered by the Jikan API. Discover, explore, and get recommendations for your next favorite series.',
   verification: {
     google: 'googlea5a1d26a19250148',
   },

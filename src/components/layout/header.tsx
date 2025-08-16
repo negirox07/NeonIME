@@ -3,6 +3,7 @@ import { LogoIcon } from '@/components/icons/logo';
 import { Nav } from '@/components/layout/nav';
 import { SearchInput } from '@/components/layout/search-input';
 import { Suspense } from 'react';
+import { MobileNav } from './mobile-nav';
 
 export function Header() {
   return (
@@ -12,13 +13,18 @@ export function Header() {
           <LogoIcon className="h-6 w-6 text-primary" />
           <span className="font-bold font-headline text-lg">NeonIME</span>
         </Link>
-        <Suspense fallback={<div />}>
-          <Nav />
-        </Suspense>
+        <div className="hidden md:block">
+            <Suspense fallback={<div />}>
+                <Nav />
+            </Suspense>
+        </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Suspense fallback={<div />}>
             <SearchInput />
           </Suspense>
+           <div className="md:hidden">
+             <MobileNav />
+          </div>
         </div>
       </div>
     </header>

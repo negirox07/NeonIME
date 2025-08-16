@@ -185,6 +185,28 @@ export interface AnimeRecommendation {
   votes: number;
 }
 
+export interface MangaRecommendation {
+  entry: {
+    mal_id: number;
+    url: string;
+    images: {
+      jpg: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+      };
+      webp: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+      };
+    };
+    title: string;
+  };
+  url: string;
+  votes: number;
+}
+
 export interface Character {
   mal_id: number;
   url: string;
@@ -220,6 +242,11 @@ export interface CharacterAnime {
 
 export interface CharacterManga {
   role: string;
+  manga: Manga;
+}
+
+export interface PersonManga {
+  position: string;
   manga: Manga;
 }
 
@@ -305,6 +332,8 @@ export interface AnimeStatistics {
   }[];
 }
 
+export interface MangaStatistics extends AnimeStatistics {}
+
 export interface StaffMember {
   person: {
     mal_id: number;
@@ -330,6 +359,8 @@ export interface AnimeRelation {
   relation: string;
   entry: RelationEntry[];
 }
+
+export interface MangaRelation extends AnimeRelation {}
 
 export interface AnimeTheme {
   openings: string[];
@@ -415,4 +446,35 @@ export interface Picture {
         small_image_url: string;
         large_image_url: string;
     };
+}
+
+export interface AnimeReview {
+  mal_id: number;
+  url: string;
+  type: string;
+  reactions: {
+    overall: number;
+    nice: number;
+    love_it: number;
+    funny: number;
+    confusing: number;
+    informative: number;
+    well_written: number;
+    creative: number;
+  };
+  date: string;
+  review: string;
+  score: number;
+  tags: string[];
+  is_spoiler: boolean;
+  is_preliminary: boolean;
+  episodes_watched: number | null;
+  user: {
+    url: string;
+    username: string;
+    images: {
+      jpg: { image_url: string };
+      webp: { image_url: string };
+    };
+  };
 }
