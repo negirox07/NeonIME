@@ -1,11 +1,14 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, BookOpen, ThumbsUp, Library, Calendar, BarChart as BarChartIcon } from 'lucide-react';
+import { Star, BookOpen, ThumbsUp, Library, Calendar, BarChart as BarChartIcon, Newspaper, MessageSquare, ChevronRight } from 'lucide-react';
 
 import type { JikanAPIResponse, Manga } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface MangaPageProps {
   params: {
@@ -97,6 +100,30 @@ export default async function MangaPage({ params }: MangaPageProps) {
         <InfoBadge icon={BookOpen} label="Chapters" value={manga.chapters || 'N/A'} />
         <InfoBadge icon={Calendar} label="Published" value={manga.published.string} />
       </section>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Newspaper /> News
+            </h3>
+            <Button asChild>
+                <Link href={`/manga/${manga.mal_id}/news`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <MessageSquare /> Forum
+            </h3>
+            <Button asChild>
+                <Link href={`/manga/${manga.mal_id}/forum`}>
+                    View Topics <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+      </div>
     </div>
   );
 }
