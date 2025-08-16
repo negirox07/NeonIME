@@ -143,6 +143,17 @@ export default async function AnimePage({ params }: AnimePageProps) {
                 </Link>
             </Button>
         </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Tv /> Episodes
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/episodes`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
 
         <Card className="flex flex-col items-center justify-center p-6 text-center">
             <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
