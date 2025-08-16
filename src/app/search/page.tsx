@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +9,21 @@ interface SearchPageProps {
     q?: string;
   };
 }
+
+export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+  const query = searchParams.q || '';
+  if (!query) {
+    return {
+      title: 'Search - NeonIME',
+      description: 'Search for your favorite anime on NeonIME.',
+    };
+  }
+  return {
+    title: `Search results for "${query}" - NeonIME`,
+    description: `Find anime matching "${query}" on NeonIME, your ultimate anime guide.`,
+  };
+}
+
 
 async function searchAnime(query: string): Promise<Anime[]> {
   if (!query) return [];

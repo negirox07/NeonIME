@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
+
+export const metadata: Metadata = {
+  title: 'NeonIME - Your Anime Universe',
+  description: 'Discover trending, popular, and upcoming anime. Your ultimate guide to the anime world, powered by the Jikan API.',
+};
 
 async function getTrendingAnime(): Promise<Anime[]> {
   try {

@@ -6,6 +6,9 @@ import { Toaster } from '@/components/ui/toaster';
 export const metadata: Metadata = {
   title: 'NeonIME - Your Anime Universe',
   description: 'An SEO-friendly and responsive anime browsing web application, powered by the Jikan API, designed for discovering and exploring anime.',
+  verification: {
+    google: 'googlea5a1d26a19250148',
+  },
 };
 
 export default function RootLayout({
