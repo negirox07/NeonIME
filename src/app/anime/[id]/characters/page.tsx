@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
-import type { JikanAPIResponse, Character, Anime } from '@/lib/types';
+import type { JikanAPIResponse, AnimeCharacter, Anime } from '@/lib/types';
 import { CharacterCard } from '@/components/anime/character-card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -29,14 +29,14 @@ async function getAnimeDetails(id: string): Promise<Anime | null> {
     }
   }
 
-async function getAnimeCharacters(id: string): Promise<Character[]> {
+async function getAnimeCharacters(id: string): Promise<AnimeCharacter[]> {
   try {
     const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/characters`);
     if (!res.ok) {
       console.error(`Failed to fetch characters for ${id}:`, res.status, await res.text());
       return [];
     }
-    const data: JikanAPIResponse<Character[]> = await res.json();
+    const data: JikanAPIResponse<AnimeCharacter[]> = await res.json();
     return data.data;
   } catch (error) {
     console.error(`Error fetching characters for ${id}:`, error);

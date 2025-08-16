@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Character } from '@/lib/types';
+import type { AnimeCharacter } from '@/lib/types';
 
 interface CharacterCardProps {
-  character: Character;
+  character: AnimeCharacter;
 }
 
 export function CharacterCard({ character }: CharacterCardProps) {

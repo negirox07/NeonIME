@@ -1,13 +1,12 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music, Clapperboard, MessageSquare, Video, PlayCircle, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation, News } from '@/lib/types';
+import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -35,36 +34,6 @@ async function getAnimeDetails(id: string): Promise<Anime | null> {
   }
 }
 
-async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/recommendations`);
-    if (!res.ok) {
-      console.error(`Failed to fetch recommendations for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<AnimeRecommendation[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching recommendations for ${id}:`, error);
-    return [];
-  }
-}
-
-async function getAnimeNews(id: string): Promise<News[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/news`);
-    if (!res.ok) {
-      console.error(`Failed to fetch news for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<News[]> = await res.json();
-    return data.data.slice(0, 6); // Get latest 6 news
-  } catch (error) {
-    console.error(`Error fetching news for ${id}:`, error);
-    return [];
-  }
-}
-
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
   if (!anime) {
@@ -89,21 +58,11 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, news] = await Promise.all([
-    getAnimeDetails(params.id),
-    getAnimeRecommendations(params.id),
-    getAnimeNews(params.id),
-  ]);
+  const anime = await getAnimeDetails(params.id);
 
   if (!anime) {
     notFound();
   }
-
-  const recommendationList = recommendations.map(rec => ({
-    mal_id: rec.entry.mal_id,
-    title: rec.entry.title,
-    images: rec.entry.images,
-  }));
   
   return (
     <div className="space-y-12">
@@ -144,88 +103,157 @@ export default async function AnimePage({ params }: AnimePageProps) {
         <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <section>
-            <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-              <Users />
-              Characters
-            </h2>
-            <div className="text-center">
-               <Button asChild>
-                  <Link href={`/anime/${anime.mal_id}/characters`}>
-                      View All Characters
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                  </Link>
-               </Button>
-            </div>
-          </section>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Users /> Characters
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/characters`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
 
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <Briefcase />
-            Staff
-          </h2>
-          <div className="text-center">
-              <Button asChild>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Briefcase /> Staff
+            </h3>
+            <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/staff`}>
-                    View All Staff
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
-              </Button>
-          </div>
-        </section>
+            </Button>
+        </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Tv /> Episodes
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/episodes`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
 
-         <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <BarChartIcon />
-            Statistics
-          </h2>
-          <div className="text-center">
-              <Button asChild>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <BarChartIcon /> Statistics
+            </h3>
+            <Button asChild>
                 <Link href={`/anime/${anime.mal_id}/statistics`}>
-                    View Statistics
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
-              </Button>
-          </div>
-        </section>
-      </div>
+            </Button>
+        </Card>
 
-      {news.length > 0 && (
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <Newspaper />
-            Recent News
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map(article => (
-              <Link href={article.url} key={article.mal_id} target="_blank" rel="noopener noreferrer" className="group block">
-                <Card className="h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50 group-hover:-translate-y-1">
-                  <div className="aspect-video relative">
-                     <Image
-                        src={article.images.jpg.image_url}
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        data-ai-hint="news article"
-                      />
-                  </div>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground mb-1">{format(new Date(article.date), 'PPP')}</p>
-                    <h3 className="font-bold font-headline line-clamp-2 text-lg text-foreground/90 group-hover:text-primary">{article.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{article.excerpt}</p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Wand2 /> Recommendations
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/recommendations`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <LinkIcon /> Relations
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/relations`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Music /> Themes
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/themes`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Newspaper /> News
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/news`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <Video /> Videos
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/videos`}>
+                    Watch Videos <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <MessageSquare /> Forum
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/forum`}>
+                    View Topics <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <LinkIcon /> External
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/external`}>
+                    View Links <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <PlayCircle /> Streaming
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/streaming`}>
+                    View Services <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <ImageIcon /> Pictures
+            </h3>
+            <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/pictures`}>
+                    View Gallery <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+      </div>
 
       {anime.trailer?.embed_url && (
         <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Trailer</h2>
+          <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+            <Clapperboard />
+            Trailer
+          </h2>
           <div className="aspect-video">
             <iframe
               src={anime.trailer.embed_url.replace('autoplay=1', 'autoplay=0')}
@@ -235,13 +263,6 @@ export default async function AnimePage({ params }: AnimePageProps) {
               className="w-full h-full rounded-lg"
             ></iframe>
           </div>
-        </section>
-      )}
-
-      {recommendationList.length > 0 && (
-        <section>
-          <h2 className="text-3xl font-bold mb-6 font-headline text-primary">You Might Also Like</h2>
-          <AnimeGrid animeList={recommendationList} />
         </section>
       )}
     </div>

@@ -76,6 +76,86 @@ export interface Anime {
   demographics: Genre[];
 }
 
+export interface Manga {
+    mal_id: number;
+    url: string;
+    images: {
+        jpg: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
+        webp: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
+    };
+    title: string;
+    title_english: string | null;
+    title_japanese: string;
+    type: string;
+    chapters: number | null;
+    volumes: number | null;
+    status: string;
+    publishing: boolean;
+    published: {
+        from: string;
+        to: string | null;
+        prop: {
+            from: { day: number; month: number; year: number };
+            to: { day: number | null; month: number | null; year: number | null };
+        };
+        string: string;
+    };
+    score: number | null;
+    scored_by: number | null;
+    rank: number;
+    popularity: number;
+    members: number;
+    favorites: number;
+    synopsis: string | null;
+    background: string | null;
+    authors: Genre[];
+    serializations: Genre[];
+    genres: Genre[];
+    explicit_genres: Genre[];
+    themes: Genre[];
+    demographics: Genre[];
+}
+
+export interface Person {
+  mal_id: number;
+  url: string;
+  website_url: string | null;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+  };
+  name: string;
+  given_name: string;
+  family_name: string;
+  alternate_names: string[];
+  birthday: string;
+  favorites: number;
+  about: string | null;
+  anime: {
+    position: string;
+    anime: Anime;
+  }[];
+  manga: {
+    position: string;
+    manga: Manga;
+  }[];
+  voices: {
+    role: string;
+    anime: Anime;
+    character: Character;
+  }[];
+}
+
+
 export interface Genre {
   mal_id: number;
   type: string;
@@ -106,6 +186,58 @@ export interface AnimeRecommendation {
 }
 
 export interface Character {
+  mal_id: number;
+  url: string;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+    webp: {
+      image_url: string;
+      small_image_url: string;
+    };
+  };
+  name: string;
+  name_kanji: string;
+  nicknames: string[];
+  favorites: number;
+  about: string | null;
+  anime?: {
+    role: string;
+    anime: Anime;
+  }[];
+  manga?: {
+    role: string;
+    manga: Manga;
+  }[];
+  voices?: VoiceActor[];
+}
+
+export interface CharacterAnime {
+  role: string;
+  anime: Anime;
+}
+
+export interface CharacterManga {
+  role: string;
+  manga: Manga;
+}
+
+export interface VoiceActor {
+    language: string;
+    person: {
+        mal_id: number;
+        url: string;
+        images: {
+            jpg: {
+                image_url: string;
+            }
+        },
+        name: string;
+    }
+}
+
+export interface AnimeCharacter {
   character: {
     mal_id: number;
     url: string;
@@ -185,4 +317,102 @@ export interface StaffMember {
     name: string;
   };
   positions: string[];
+}
+
+export interface RelationEntry {
+  mal_id: number;
+  type: string;
+  name: string;
+  url: string;
+}
+
+export interface AnimeRelation {
+  relation: string;
+  entry: RelationEntry[];
+}
+
+export interface AnimeTheme {
+  openings: string[];
+  endings: string[];
+}
+
+export interface AnimeEpisode {
+    mal_id: number;
+    url: string;
+    title: string;
+    title_japanese: string;
+    title_romanji: string;
+    aired: string;
+    score: number | null;
+    filler: boolean;
+    recap: boolean;
+    forum_url: string;
+    synopsis?: string;
+}
+
+export interface ForumTopic {
+  mal_id: number;
+  url: string;
+  title: string;
+  date: string;
+  author_username: string;
+  author_url: string;
+  comments: number;
+  last_comment: {
+    url: string;
+    author_username: string;
+    author_url: string;
+    date: string;
+  };
+}
+
+export interface PromoVideo {
+    title: string;
+    trailer: {
+      youtube_id: string;
+      url: string;
+      embed_url: string;
+      images: {
+        image_url: string;
+        small_image_url: string;
+        medium_image_url: string;
+        large_image_url: string;
+        maximum_image_url: string;
+      }
+    }
+}
+
+export interface VideoEpisode {
+    mal_id: number;
+    url: string;
+    title: string;
+    episode: string;
+    images: {
+        jpg: {
+            image_url: string;
+        }
+    }
+}
+
+export interface AnimeVideo {
+    promo: PromoVideo[];
+    episodes: VideoEpisode[];
+}
+
+export interface ExternalLink {
+  name: string;
+  url: string;
+}
+
+export interface Picture {
+    jpg: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+    };
+    webp: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+    };
 }
