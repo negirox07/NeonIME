@@ -10,6 +10,7 @@ export function Nav() {
     { href: '/', label: 'Home' },
     { href: '/seasons', label: 'Seasons' },
     { href: '/characters', label: 'Characters' },
+    { href: '/people', label: 'People' },
   ];
 
   return (

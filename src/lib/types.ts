@@ -124,6 +124,37 @@ export interface Manga {
     demographics: Genre[];
 }
 
+export interface Person {
+  mal_id: number;
+  url: string;
+  website_url: string | null;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+  };
+  name: string;
+  given_name: string;
+  family_name: string;
+  alternate_names: string[];
+  birthday: string;
+  favorites: number;
+  about: string | null;
+  anime: {
+    position: string;
+    anime: Anime;
+  }[];
+  manga: {
+    position: string;
+    manga: Manga;
+  }[];
+  voices: {
+    role: string;
+    anime: Anime;
+    character: Character;
+  }[];
+}
+
 
 export interface Genre {
   mal_id: number;
