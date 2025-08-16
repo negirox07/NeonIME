@@ -1,10 +1,9 @@
-import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import type { JikanAPIResponse, Character, Manga, Anime } from '@/lib/types';
-import { BookOpen, Clapperboard, Heart, ChevronRight } from 'lucide-react';
+import type { JikanAPIResponse, Character, Manga, Anime, VoiceActor } from '@/lib/types';
+import { BookOpen, Clapperboard, Heart, ChevronRight, Mic2 } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -52,16 +51,6 @@ export default async function CharacterPage({ params }: CharacterPageProps) {
         notFound();
     }
 
-    const animeography = character.anime?.map(a => ({
-        ...a.anime,
-        score: undefined
-    })) as (Partial<Anime> & { mal_id: number; title: string; images: Anime['images'] })[] || [];
-
-    const mangaography = character.manga?.map(m => ({
-        ...m.manga,
-        score: undefined
-    })) as (Partial<Manga> & { mal_id: number; title: string; images: Manga['images'] })[] || [];
-
     return (
         <div className="space-y-12">
             <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -108,7 +97,7 @@ export default async function CharacterPage({ params }: CharacterPageProps) {
                 </div>
             </section>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <Card className="flex flex-col items-center justify-center p-6 text-center">
                     <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
                         <Clapperboard /> Anime Appearances
@@ -126,6 +115,17 @@ export default async function CharacterPage({ params }: CharacterPageProps) {
                     </h3>
                     <Button asChild>
                         <Link href={`/characters/${character.mal_id}/manga`}>
+                            View All <ChevronRight className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </Card>
+                
+                <Card className="flex flex-col items-center justify-center p-6 text-center">
+                    <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                        <Mic2 /> Voice Actors
+                    </h3>
+                    <Button asChild>
+                        <Link href={`/characters/${character.mal_id}/voices`}>
                             View All <ChevronRight className="w-4 h-4 ml-2" />
                         </Link>
                     </Button>

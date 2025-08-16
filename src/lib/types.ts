@@ -179,7 +179,20 @@ export interface Character {
     role: string;
     manga: Manga;
   }[];
-  voices?: {
+  voices?: VoiceActor[];
+}
+
+export interface CharacterAnime {
+  role: string;
+  anime: Anime;
+}
+
+export interface CharacterManga {
+  role: string;
+  manga: Manga;
+}
+
+export interface VoiceActor {
     language: string;
     person: {
         mal_id: number;
@@ -191,12 +204,6 @@ export interface Character {
         },
         name: string;
     }
-  }[]
-}
-
-export interface CharacterAnime {
-  role: string;
-  anime: Anime;
 }
 
 export interface AnimeCharacter {
