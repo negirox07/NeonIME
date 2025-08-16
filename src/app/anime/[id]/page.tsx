@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Info } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 
 import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News, AnimeStatistics } from '@/lib/types';
@@ -168,20 +168,37 @@ export default async function AnimePage({ params }: AnimePageProps) {
         </section>
       )}
 
-      <section>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section>
+            <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+              <Users />
+              Characters
+            </h2>
+            <div className="text-center">
+               <Button asChild>
+                  <Link href={`/anime/${anime.mal_id}/characters`}>
+                      View All Characters
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                  </Link>
+               </Button>
+            </div>
+          </section>
+
+        <section>
           <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
-            <Users />
-            Characters
+            <Briefcase />
+            Staff
           </h2>
           <div className="text-center">
-             <Button asChild>
-                <Link href={`/anime/${anime.mal_id}/characters`}>
-                    View All Characters
-                    <ChevronRight className="w-4 h-4" />
+              <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/staff`}>
+                    View All Staff
+                    <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
-             </Button>
+              </Button>
           </div>
         </section>
+      </div>
 
       {news.length > 0 && (
         <section>
