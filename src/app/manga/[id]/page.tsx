@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, BookOpen, ThumbsUp, Library, Calendar, BarChart as BarChartIcon, Newspaper, MessageSquare, ChevronRight, Users, ImageIcon, Wand2, StarHalf } from 'lucide-react';
+import { Star, BookOpen, ThumbsUp, Library, Calendar, BarChart as BarChartIcon, Newspaper, MessageSquare, ChevronRight, Users, ImageIcon, Wand2, StarHalf, Link as LinkIcon } from 'lucide-react';
 
 import type { JikanAPIResponse, Manga } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -171,6 +171,26 @@ export default async function MangaPage({ params }: MangaPageProps) {
             <Button asChild>
                 <Link href={`/manga/${manga.mal_id}/reviews`}>
                     Read Reviews <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <LinkIcon /> Relations
+            </h3>
+            <Button asChild>
+                <Link href={`/manga/${manga.mal_id}/relations`}>
+                    View All <ChevronRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </Card>
+        <Card className="flex flex-col items-center justify-center p-6 text-center">
+            <h3 className="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-4">
+                <LinkIcon /> External
+            </h3>
+            <Button asChild>
+                <Link href={`/manga/${manga.mal_id}/external`}>
+                    View Links <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
             </Button>
         </Card>

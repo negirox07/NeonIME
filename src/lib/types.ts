@@ -360,6 +360,8 @@ export interface AnimeRelation {
   entry: RelationEntry[];
 }
 
+export interface MangaRelation extends AnimeRelation {}
+
 export interface AnimeTheme {
   openings: string[];
   endings: string[];
