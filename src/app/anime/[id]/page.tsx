@@ -8,10 +8,11 @@ import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News, Ani
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimeGrid } from '@/components/anime/anime-grid';
-import { CharacterCard } from '@/components/anime/character-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { StatisticsChart } from '@/components/anime/statistics-chart';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 interface AnimePageProps {
   params: {
@@ -46,22 +47,6 @@ async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[
     return data.data;
   } catch (error) {
     console.error(`Error fetching recommendations for ${id}:`, error);
-    return [];
-  }
-}
-
-async function getAnimeCharacters(id: string): Promise<Character[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/characters`);
-    if (!res.ok) {
-      console.error(`Failed to fetch characters for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Character[]> = await res.json();
-    // Only show main characters
-    return data.data.filter(c => c.role === 'Main').slice(0, 12);
-  } catch (error) {
-    console.error(`Error fetching characters for ${id}:`, error);
     return [];
   }
 }
@@ -121,10 +106,9 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, characters, news, statistics] = await Promise.all([
+  const [anime, recommendations, news, statistics] = await Promise.all([
     getAnimeDetails(params.id),
     getAnimeRecommendations(params.id),
-    getAnimeCharacters(params.id),
     getAnimeNews(params.id),
     getAnimeStatistics(params.id),
   ]);
@@ -184,19 +168,20 @@ export default async function AnimePage({ params }: AnimePageProps) {
         </section>
       )}
 
-      {characters.length > 0 && (
-        <section>
+      <section>
           <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
             <Users />
-            Main Characters
+            Characters
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {characters.map(character => (
-              <CharacterCard key={character.character.mal_id} character={character} />
-            ))}
+          <div className="text-center">
+             <Button asChild>
+                <Link href={`/anime/${anime.mal_id}/characters`}>
+                    View All Characters
+                    <ChevronRight className="w-4 h-4" />
+                </Link>
+             </Button>
           </div>
         </section>
-      )}
 
       {news.length > 0 && (
         <section>
