@@ -1,16 +1,17 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Star, Tv, Film, Calendar, BarChart, BookOpen, ThumbsUp, Users, Newspaper } from 'lucide-react';
+import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Info } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News } from '@/lib/types';
+import type { JikanAPIResponse, Anime, AnimeRecommendation, Character, News, AnimeStatistics } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { CharacterCard } from '@/components/anime/character-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
+import { StatisticsChart } from '@/components/anime/statistics-chart';
 
 interface AnimePageProps {
   params: {
@@ -80,6 +81,21 @@ async function getAnimeNews(id: string): Promise<News[]> {
   }
 }
 
+async function getAnimeStatistics(id: string): Promise<AnimeStatistics | null> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/statistics`);
+    if (!res.ok) {
+      console.error(`Failed to fetch statistics for ${id}:`, res.status, await res.text());
+      return null;
+    }
+    const data: JikanAPIResponse<AnimeStatistics> = await res.json();
+    return data.data;
+  } catch (error) {
+    console.error(`Error fetching statistics for ${id}:`, error);
+    return null;
+  }
+}
+
 
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
   const anime = await getAnimeDetails(params.id);
@@ -105,11 +121,12 @@ const InfoBadge = ({ icon, label, value }: { icon: React.ElementType, label: str
 };
 
 export default async function AnimePage({ params }: AnimePageProps) {
-  const [anime, recommendations, characters, news] = await Promise.all([
+  const [anime, recommendations, characters, news, statistics] = await Promise.all([
     getAnimeDetails(params.id),
     getAnimeRecommendations(params.id),
     getAnimeCharacters(params.id),
     getAnimeNews(params.id),
+    getAnimeStatistics(params.id),
   ]);
 
   if (!anime) {
@@ -154,12 +171,18 @@ export default async function AnimePage({ params }: AnimePageProps) {
       
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <InfoBadge icon={Star} label="Score" value={anime.score ? `${anime.score} / 10` : 'N/A'} />
-        <InfoBadge icon={BarChart} label="Rank" value={anime.rank ? `#${anime.rank}` : 'N/A'} />
+        <InfoBadge icon={BarChartIcon} label="Rank" value={anime.rank ? `#${anime.rank}` : 'N/A'} />
         <InfoBadge icon={ThumbsUp} label="Popularity" value={anime.popularity ? `#${anime.popularity}` : 'N/A'} />
         <InfoBadge icon={anime.type === 'TV' ? Tv : Film} label="Type" value={anime.type} />
         <InfoBadge icon={BookOpen} label="Episodes" value={anime.episodes || 'N/A'} />
         <InfoBadge icon={Calendar} label="Aired" value={anime.aired.string} />
       </section>
+
+      {statistics && (
+        <section>
+          <StatisticsChart statistics={statistics} />
+        </section>
+      )}
 
       {characters.length > 0 && (
         <section>
