@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Tag, Book, Tv } from 'lucide-react';
@@ -29,7 +30,7 @@ function GenreList({ genres, type }: { genres: Genre[], type: 'anime' | 'manga' 
     return (
         <div className="flex flex-wrap gap-2">
             {genres.map(genre => (
-                <Link key={genre.mal_id} href={`/search?genres=${genre.mal_id}${type === 'manga' ? '&type=manga' : ''}`}>
+                <Link key={`${genre.mal_id}-${genre.name}`} href={`/search?genres=${genre.mal_id}${type === 'manga' ? '&type=manga' : ''}`}>
                     <Badge variant="secondary" className="text-sm transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105">
                         {genre.name} ({genre.count.toLocaleString()})
                     </Badge>
