@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
-import type { JikanAPIResponse, Person } from '@/lib/types';
+import type { Person } from '@/lib/types';
 import { PersonCard } from '@/components/person/person-card';
 import RandomAd from '@/components/RandomAd';
+import { getTopPeople as getPeople } from '@/services/jikan';
 
 export const metadata: Metadata = {
     title: 'Top People - NeonIME',
@@ -11,18 +12,8 @@ export const metadata: Metadata = {
 };
 
 async function getTopPeople(): Promise<Person[]> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/top/people`);
-        if (!res.ok) {
-            console.error(`Failed to fetch top people:`, res.status, await res.text());
-            return [];
-        }
-        const data: JikanAPIResponse<Person[]> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching top people:`, error);
-        return [];
-    }
+    const response = await getPeople();
+    return response?.data ?? [];
 }
 
 export default async function PeoplePage() {

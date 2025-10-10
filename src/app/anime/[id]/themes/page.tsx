@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Music, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Anime, AnimeTheme } from '@/lib/types';
+import type { Anime, AnimeTheme } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { getAnimeById, getAnimeThemes as getThemes } from '@/services/jikan';
 
 
 interface ThemesPageProps {
@@ -15,34 +15,13 @@ interface ThemesPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeThemes(id: string): Promise<AnimeTheme | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/themes`);
-    if (!res.ok) {
-      console.error(`Failed to fetch themes for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<AnimeTheme> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching themes for ${id}:`, error);
-    return null;
-  }
+    const response = await getThemes(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: ThemesPageProps): Promise<Metadata> {

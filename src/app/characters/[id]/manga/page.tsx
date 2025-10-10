@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookOpen, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Character, CharacterManga } from '@/lib/types';
+import type { Character, CharacterManga } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MangaAppearanceCard } from '@/components/character/manga-appearance-card';
+import { getCharacterById, getCharacterManga as getMangaAppearances } from '@/services/jikan';
 
 interface CharacterMangaPageProps {
   params: {
@@ -13,34 +14,13 @@ interface CharacterMangaPageProps {
 }
 
 async function getCharacterDetails(id: string): Promise<Character | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch character ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Character> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching character ${id}:`, error);
-        return null;
-    }
+    const response = await getCharacterById(id);
+    return response?.data ?? null;
 }
 
 async function getCharacterManga(id: string): Promise<CharacterManga[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/manga`);
-    if (!res.ok) {
-      console.error(`Failed to fetch manga appearances for character ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<CharacterManga[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching manga appearances for character ${id}:`, error);
-    return [];
-  }
+    const response = await getMangaAppearances(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: CharacterMangaPageProps): Promise<Metadata> {

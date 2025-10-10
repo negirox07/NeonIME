@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ReviewCard } from '@/components/anime/review-card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { getAnimeById, getAnimeReviews as getReviews } from '@/services/jikan';
 
 interface ReviewsPageProps {
   params: {
@@ -17,34 +18,12 @@ interface ReviewsPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeReviews(id: string, page: number): Promise<JikanAPIResponse<AnimeReview[]> | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/reviews?page=${page}&preliminary=true&spoilers=true`);
-    if (!res.ok) {
-      console.error(`Failed to fetch reviews for anime ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<AnimeReview[]> = await res.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching reviews for anime ${id}:`, error);
-    return null;
-  }
+    return await getReviews(id, page);
 }
 
 

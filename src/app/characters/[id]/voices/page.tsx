@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Mic2, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Character, VoiceActor } from '@/lib/types';
+import type { Character, VoiceActor } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { VoiceActorCard } from '@/components/character/voice-actor-card';
+import { getCharacterById, getCharacterVoices as getVoices } from '@/services/jikan';
 
 interface CharacterVoicesPageProps {
   params: {
@@ -13,34 +14,13 @@ interface CharacterVoicesPageProps {
 }
 
 async function getCharacterDetails(id: string): Promise<Character | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch character ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Character> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching character ${id}:`, error);
-        return null;
-    }
+    const response = await getCharacterById(id);
+    return response?.data ?? null;
 }
 
 async function getCharacterVoices(id: string): Promise<VoiceActor[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/voices`);
-    if (!res.ok) {
-      console.error(`Failed to fetch voice actors for character ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<VoiceActor[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching voice actors for character ${id}:`, error);
-    return [];
-  }
+    const response = await getVoices(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: CharacterVoicesPageProps): Promise<Metadata> {

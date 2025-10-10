@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
-import type { JikanAPIResponse, AnimeCharacter, Anime } from '@/lib/types';
+import type { AnimeCharacter, Anime } from '@/lib/types';
 import { CharacterCard } from '@/components/anime/character-card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import RandomAd from '@/components/RandomAd';
+import { getAnimeById, getAnimeCharacters as getCharacters } from '@/services/jikan';
 
 interface CharactersPageProps {
   params: {
@@ -15,34 +16,13 @@ interface CharactersPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
-  }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
+}
 
 async function getAnimeCharacters(id: string): Promise<AnimeCharacter[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/characters`);
-    if (!res.ok) {
-      console.error(`Failed to fetch characters for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<AnimeCharacter[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching characters for ${id}:`, error);
-    return [];
-  }
+  const response = await getCharacters(id);
+  return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: CharactersPageProps): Promise<Metadata> {

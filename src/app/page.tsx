@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import type { JikanAPIResponse, Anime } from '@/lib/types';
+import type { Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import RandomAd from '@/components/RandomAd';
+import { getTopAnime } from '@/services/jikan';
 
 export const metadata: Metadata = {
   title: 'NeonIME - Your Anime Universe',
@@ -9,54 +10,18 @@ export const metadata: Metadata = {
 };
 
 async function getTrendingAnime(): Promise<Anime[]> {
-  try {
-    const res = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing', {
-      next: { revalidate: 3600 } // Revalidate every hour
-    });
-    if (!res.ok) {
-      console.error('Failed to fetch trending anime:', res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Anime[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching trending anime:', error);
-    return [];
-  }
+  const response = await getTopAnime('airing');
+  return response?.data || [];
 }
 
 async function getPopularAnime(): Promise<Anime[]> {
-   try {
-    const res = await fetch('https://api.jikan.moe/v4/top/anime?filter=bypopularity', {
-      next: { revalidate: 86400 } // Revalidate every day
-    });
-    if (!res.ok) {
-      console.error('Failed to fetch popular anime:', res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Anime[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching popular anime:', error);
-    return [];
-  }
+  const response = await getTopAnime('bypopularity');
+  return response?.data || [];
 }
 
 async function getUpcomingAnime(): Promise<Anime[]> {
-  try {
-   const res = await fetch('https://api.jikan.moe/v4/top/anime?filter=upcoming', {
-     next: { revalidate: 86400 } // Revalidate every day
-   });
-   if (!res.ok) {
-     console.error('Failed to fetch upcoming anime:', res.status, await res.text());
-     return [];
-   }
-   const data: JikanAPIResponse<Anime[]> = await res.json();
-   return data.data;
- } catch (error) {
-   console.error('Error fetching upcoming anime:', error);
-   return [];
- }
+  const response = await getTopAnime('upcoming');
+  return response?.data || [];
 }
 
 export default async function HomePage() {

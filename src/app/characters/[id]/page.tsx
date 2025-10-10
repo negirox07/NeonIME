@@ -2,13 +2,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import type { JikanAPIResponse, Character, Manga, Anime, VoiceActor } from '@/lib/types';
+import type { Character } from '@/lib/types';
 import { BookOpen, Clapperboard, Heart, ChevronRight, Mic2 } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import RandomAd from '@/components/RandomAd';
+import { getCharacterById } from '@/services/jikan';
 
 interface CharacterPageProps {
   params: {
@@ -17,19 +18,8 @@ interface CharacterPageProps {
 }
 
 async function getCharacterDetails(id: string): Promise<Character | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/full`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch character ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Character> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching character ${id}:`, error);
-        return null;
-    }
+    const response = await getCharacterById(id);
+    return response?.data ?? null;
 }
 
 

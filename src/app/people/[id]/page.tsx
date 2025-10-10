@@ -1,14 +1,15 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import type { JikanAPIResponse, Person } from '@/lib/types';
-import { Heart, Clapperboard, Briefcase, ChevronRight, Mic2, BookOpen, Image as ImageIcon } from 'lucide-react';
+import type { Person } from '@/lib/types';
+import { Heart, Briefcase, ChevronRight, Mic2, BookOpen, Image as ImageIcon } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import RandomAd from '@/components/RandomAd';
+import { getPersonById } from '@/services/jikan';
 
 interface PersonPageProps {
   params: {
@@ -17,19 +18,8 @@ interface PersonPageProps {
 }
 
 async function getPersonDetails(id: string): Promise<Person | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/people/${id}/full`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch person ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Person> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching person ${id}:`, error);
-        return null;
-    }
+    const response = await getPersonById(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: PersonPageProps): Promise<Metadata> {

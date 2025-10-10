@@ -1,9 +1,10 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import type { JikanAPIResponse, Anime } from '@/lib/types';
+import type { Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Skeleton } from '@/components/ui/skeleton';
 import RandomAd from '@/components/RandomAd';
+import { getAnimeSearch } from '@/services/jikan';
 
 interface SearchPageProps {
   searchParams: {
@@ -28,18 +29,8 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
 
 async function searchAnime(query: string): Promise<Anime[]> {
   if (!query) return [];
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw`);
-    if (!res.ok) {
-      console.error('Failed to fetch search results:', res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Anime[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching search results:', error);
-    return [];
-  }
+  const response = await getAnimeSearch(query);
+  return response?.data ?? [];
 }
 
 async function SearchResults({ query }: { query: string }) {

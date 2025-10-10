@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
-import type { JikanAPIResponse, Manga } from '@/lib/types';
+import type { Manga } from '@/lib/types';
 import { MangaGrid } from '@/components/manga/manga-grid';
 import RandomAd from '@/components/RandomAd';
+import { getTopManga as getManga } from '@/services/jikan';
 
 export const metadata: Metadata = {
     title: 'Top Manga - NeonIME',
@@ -11,18 +12,8 @@ export const metadata: Metadata = {
 };
 
 async function getTopManga(): Promise<Manga[]> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/top/manga`);
-        if (!res.ok) {
-            console.error(`Failed to fetch top manga:`, res.status, await res.text());
-            return [];
-        }
-        const data: JikanAPIResponse<Manga[]> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching top manga:`, error);
-        return [];
-    }
+    const response = await getManga();
+    return response?.data ?? [];
 }
 
 export default async function MangaPage() {
