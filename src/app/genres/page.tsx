@@ -8,6 +8,7 @@ import { getAnimeGenres, getMangaGenres } from '@/services/jikan';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import RandomAd from '@/components/RandomAd';
 
 export const metadata: Metadata = {
     title: 'Genres - NeonIME',
@@ -30,7 +31,7 @@ function GenreList({ genres, type }: { genres: Genre[], type: 'anime' | 'manga' 
     return (
         <div className="flex flex-wrap gap-2">
             {genres.map(genre => (
-                <Link key={`${genre.mal_id}-${genre.name}`} href={`/search?genres=${genre.mal_id}${type === 'manga' ? '&type=manga' : ''}`}>
+                <Link key={`${genre.mal_id}-${genre.name}-${genre.type}`} href={`/search?genres=${genre.mal_id}${type === 'manga' ? '&type=manga' : ''}`}>
                     <Badge variant="secondary" className="text-sm transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105">
                         {genre.name} ({genre.count.toLocaleString()})
                     </Badge>
@@ -47,6 +48,7 @@ export default async function GenresPage() {
         notFound();
     }
     
+    // This function categorizes genres to handle API inconsistencies.
     const filterAndCategorizeGenres = (genres: Genre[]): { [key: string]: Genre[] } => {
         const categorized: { [key: string]: Genre[] } = {
             genres: [],
@@ -76,6 +78,7 @@ export default async function GenresPage() {
 
     return (
         <section>
+            <RandomAd />
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                     <Tag />
