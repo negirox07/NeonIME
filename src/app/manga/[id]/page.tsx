@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import RandomAd from '@/components/RandomAd';
 
 interface MangaPageProps {
   params: {
@@ -64,6 +65,7 @@ export default async function MangaPage({ params }: MangaPageProps) {
   
   return (
     <div className="space-y-12">
+      <RandomAd />
       <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="md:col-span-1">
           <Image

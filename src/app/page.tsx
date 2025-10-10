@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
+import RandomAd from '@/components/RandomAd';
 
 export const metadata: Metadata = {
   title: 'NeonIME - Your Anime Universe',
@@ -58,7 +59,6 @@ async function getUpcomingAnime(): Promise<Anime[]> {
  }
 }
 
-
 export default async function HomePage() {
   const [trendingAnime, popularAnime, upcomingAnime] = await Promise.all([
     getTrendingAnime(),
@@ -94,6 +94,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-12">
+      <RandomAd />
       <section>
         <h1 className="text-3xl font-bold mb-6 font-headline text-primary">Trending Now</h1>
         {uniqueTrending.length > 0 ? (

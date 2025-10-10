@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
 import type { JikanAPIResponse, Person } from '@/lib/types';
 import { PersonCard } from '@/components/person/person-card';
+import RandomAd from '@/components/RandomAd';
 
 export const metadata: Metadata = {
     title: 'Top People - NeonIME',
@@ -33,6 +34,7 @@ export default async function PeoplePage() {
 
     return (
         <section>
+            <RandomAd />
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                     <Users />

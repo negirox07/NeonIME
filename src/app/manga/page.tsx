@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
 import type { JikanAPIResponse, Manga } from '@/lib/types';
 import { MangaGrid } from '@/components/manga/manga-grid';
+import RandomAd from '@/components/RandomAd';
 
 export const metadata: Metadata = {
     title: 'Top Manga - NeonIME',
@@ -33,6 +34,7 @@ export default async function MangaPage() {
 
     return (
         <section>
+            <RandomAd />
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                     <BookOpen />

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import RandomAd from '@/components/RandomAd';
 
 interface EpisodePageProps {
   params: {
@@ -70,6 +71,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
   return (
     <section>
+        <RandomAd />
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                 <Tv />

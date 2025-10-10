@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { EpisodeCard } from '@/components/anime/episode-card';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import RandomAd from '@/components/RandomAd';
 
 
 interface EpisodesPageProps {
@@ -73,6 +74,7 @@ export default async function EpisodesPage({ params, searchParams }: EpisodesPag
 
   return (
     <section>
+        <RandomAd />
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                 <Tv />

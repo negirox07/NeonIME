@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import RandomAd from '@/components/RandomAd';
 
 interface AnimePageProps {
   params: {
@@ -66,6 +67,7 @@ export default async function AnimePage({ params }: AnimePageProps) {
   
   return (
     <div className="space-y-12">
+      <RandomAd />
       <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="md:col-span-1">
           <Image

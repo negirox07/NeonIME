@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import RandomAd from '@/components/RandomAd';
 
 interface CharacterPageProps {
   params: {
@@ -53,6 +54,7 @@ export default async function CharacterPage({ params }: CharacterPageProps) {
 
     return (
         <div className="space-y-12">
+            <RandomAd />
             <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="md:col-span-1">
                     <Image

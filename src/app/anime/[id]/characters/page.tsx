@@ -6,6 +6,7 @@ import { CharacterCard } from '@/components/anime/character-card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import RandomAd from '@/components/RandomAd';
 
 interface CharactersPageProps {
   params: {
@@ -65,6 +66,7 @@ export default async function CharactersPage({ params }: CharactersPageProps) {
 
   return (
     <section>
+      <RandomAd />
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
                 <Users />
