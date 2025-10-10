@@ -20,7 +20,7 @@ async function fetchJikanAPI<T>(endpoint: string): Promise<T | null> {
 }
 
 // Anime
-export const getAnimeSearch = async (query: string): Promise<JikanAPIResponse<Anime[]> | null> => fetchJikanAPI(`anime?q=${encodeURIComponent(query)}&sfw`);
+export const getAnimeSearch = async (query: string): Promise<JikanAPIResponse<Anime[]> | null> => fetchJikanAPI(`anime?${query}&sfw`);
 export const getAnimeById = async (id: string): Promise<JikanAPIResponse<Anime> | null> => fetchJikanAPI(`anime/${id}/full`);
 export const getAnimeCharacters = async (id: string): Promise<JikanAPIResponse<AnimeCharacter[]> | null> => fetchJikanAPI(`anime/${id}/characters`);
 export const getAnimeStaff = async (id: string): Promise<JikanAPIResponse<StaffMember[]> | null> => fetchJikanAPI(`anime/${id}/staff`);
@@ -41,7 +41,7 @@ export const getAnimeForum = async (id: string): Promise<JikanAPIResponse<ForumT
 
 
 // Manga
-export const getMangaSearch = async (query: string): Promise<JikanAPIResponse<Manga[]> | null> => fetchJikanAPI(`manga?q=${encodeURIComponent(query)}&sfw`);
+export const getMangaSearch = async (query: string): Promise<JikanAPIResponse<Manga[]> | null> => fetchJikanAPI(`manga?${query}&sfw`);
 export const getMangaById = async (id: string): Promise<JikanAPIResponse<Manga> | null> => fetchJikanAPI(`manga/${id}/full`);
 export const getMangaCharacters = async (id: string): Promise<JikanAPIResponse<any[]> | null> => fetchJikanAPI(`manga/${id}/characters`);
 export const getMangaPictures = async (id: string): Promise<JikanAPIResponse<Picture[]> | null> => fetchJikanAPI(`manga/${id}/pictures`);

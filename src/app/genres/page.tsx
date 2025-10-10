@@ -22,14 +22,14 @@ async function getGenres(): Promise<{ anime: Genre[], manga: Genre[] }> {
     };
 }
 
-function GenreList({ genres }: { genres: Genre[] }) {
+function GenreList({ genres, type }: { genres: Genre[], type: 'anime' | 'manga' }) {
     if (!genres || genres.length === 0) {
         return <p>No genres found.</p>;
     }
     return (
         <div className="flex flex-wrap gap-2">
             {genres.map(genre => (
-                <Link key={genre.mal_id} href={`/search?genres=${genre.mal_id}`}>
+                <Link key={genre.mal_id} href={`/search?genres=${genre.mal_id}${type === 'manga' ? '&type=manga' : ''}`}>
                     <Badge variant="secondary" className="text-sm transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105">
                         {genre.name} ({genre.count.toLocaleString()})
                     </Badge>
@@ -47,7 +47,10 @@ export default async function GenresPage() {
     }
     
     const filterGenres = (genres: Genre[], type: 'genres' | 'themes' | 'demographics' | 'explicit_genres') => {
-        return genres.filter(g => g.type === type);
+        // The API sends 'explicit' but the type says 'explicit_genres'
+        const filterType = type === 'explicit_genres' ? 'explicit' : type;
+        // The API sends some genres with a null type, filter them out.
+        return genres.filter(g => g.type === filterType);
     }
 
     return (
@@ -67,33 +70,32 @@ export default async function GenresPage() {
                 <TabsContent value="anime" className="mt-6 space-y-8">
                     <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Genres</h2>
-                        <GenreList genres={filterGenres(animeGenres, 'genres')} />
+                        <GenreList genres={filterGenres(animeGenres, 'genres')} type="anime" />
                     </div>
                      <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Themes</h2>
-                        <GenreList genres={filterGenres(animeGenres, 'themes')} />
+                        <GenreList genres={filterGenres(animeGenres, 'themes')} type="anime" />
                     </div>
                      <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Demographics</h2>
-                        <GenreList genres={filterGenres(animeGenres, 'demographics')} />
+                        <GenreList genres={filterGenres(animeGenres, 'demographics')} type="anime" />
                     </div>
                 </TabsContent>
                 <TabsContent value="manga" className="mt-6 space-y-8">
                      <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Genres</h2>
-                        <GenreList genres={filterGenres(mangaGenres, 'genres')} />
+                        <GenreList genres={filterGenres(mangaGenres, 'genres')} type="manga" />
                     </div>
                      <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Themes</h2>
-                        <GenreList genres={filterGenres(mangaGenres, 'themes')} />
+                        <GenreList genres={filterGenres(mangaGenres, 'themes')} type="manga" />
                     </div>
                      <div>
                         <h2 className="text-2xl font-bold font-headline text-accent mb-4">Demographics</h2>
-                        <GenreList genres={filterGenres(mangaGenres, 'demographics')} />
+                        <GenreList genres={filterGenres(mangaGenres, 'demographics')} type="manga" />
                     </div>
                 </TabsContent>
             </Tabs>
         </section>
     );
 }
-
