@@ -1,9 +1,10 @@
-import type { JikanAPIResponse, Anime, Manga, Character, Person, Genre, Season, News, AnimeStatistics, StaffMember, AnimeRelation, AnimeTheme, AnimeEpisode, ForumTopic, AnimeVideo, ExternalLink, Picture, AnimeReview, MangaStatistics, MangaRecommendation, MangaRelation, CharacterAnime, CharacterManga, VoiceActor, PersonManga } from '@/lib/types';
+import type { JikanAPIResponse, Anime, Manga, Character, Person, Genre, Season, News, AnimeStatistics, StaffMember, AnimeRelation, AnimeTheme, AnimeEpisode, ForumTopic, AnimeVideo, ExternalLink, Picture, AnimeReview, MangaStatistics, MangaRecommendation, MangaRelation, CharacterAnime, CharacterManga, VoiceActor, PersonManga, Club, ClubMember } from '@/lib/types';
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
 async function fetchJikanAPI<T>(endpoint: string): Promise<T | null> {
     try {
+        await new Promise(resolve => setTimeout(resolve, 350)); // Rate limiting
         const res = await fetch(`${API_BASE_URL}/${endpoint}`);
         if (!res.ok) {
             if (res.status === 404) return null;
@@ -89,6 +90,7 @@ export const getTopAnime = async (filter: string = 'bypopularity'): Promise<Jika
 export const getTopManga = async (filter: string = 'bypopularity'): Promise<JikanAPIResponse<Manga[]> | null> => fetchJikanAPI(`top/manga?filter=${filter}`);
 export const getTopCharacters = async (): Promise<JikanAPIResponse<Character[]> | null> => fetchJikanAPI('top/characters');
 export const getTopPeople = async (): Promise<JikanAPIResponse<Person[]> | null> => fetchJikanAPI('top/people');
+export const getTopClubs = async (): Promise<JikanAPIResponse<Club[]> | null> => fetchJikanAPI('top/clubs');
 
 
 // Recommendations
@@ -111,6 +113,10 @@ export const getRecentMangaReviews = async (): Promise<JikanAPIResponse<any[]> |
 // Genres
 export const getAnimeGenres = async (): Promise<JikanAPIResponse<Genre[]> | null> => fetchJikanAPI('genres/anime');
 export const getMangaGenres = async (): Promise<JikanAPIResponse<Genre[]> | null> => fetchJikanAPI('genres/manga');
+
+// Clubs
+export const getClubById = async (id: string): Promise<JikanAPIResponse<Club> | null> => fetchJikanAPI(`clubs/${id}`);
+export const getClubMembers = async (id: string, page: number = 1): Promise<JikanAPIResponse<ClubMember[]> | null> => fetchJikanAPI(`clubs/${id}/members?page=${page}`);
 
 // Other
 export const getMagazines = async (): Promise<JikanAPIResponse<any[]> | null> => fetchJikanAPI('magazines');

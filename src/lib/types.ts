@@ -478,3 +478,37 @@ export interface AnimeReview {
     };
   };
 }
+
+export interface Club {
+  mal_id: number;
+  url: string;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+  };
+  name: string;
+  members: number;
+  category: string;
+  created: string;
+  access: string;
+}
+
+export interface ClubMember {
+  username: string;
+  url: string;
+  image_url: string;
+}
+
+export interface UserMeta {
+    username: string;
+    url: string;
+    images: {
+        jpg: {
+            image_url: string;
+        };
+        webp: {
+            image_url: string;
+        };
+    };
+}
