@@ -66,11 +66,31 @@ export default async function HomePage() {
     getUpcomingAnime(),
   ]);
 
-  const uniqueTrending = trendingAnime;
-  const popularIds = new Set(uniqueTrending.map(a => a.mal_id));
-  const uniquePopular = popularAnime.filter(a => !popularIds.has(a.mal_id));
-  const upcomingIds = new Set([...uniqueTrending, ...uniquePopular].map(a => a.mal_id));
-  const uniqueUpcoming = upcomingAnime.filter(a => !upcomingIds.has(a.mal_id));
+  const displayedIds = new Set<number>();
+
+  const uniqueTrending = trendingAnime.filter(anime => {
+    if (displayedIds.has(anime.mal_id)) {
+      return false;
+    }
+    displayedIds.add(anime.mal_id);
+    return true;
+  });
+
+  const uniquePopular = popularAnime.filter(anime => {
+    if (displayedIds.has(anime.mal_id)) {
+      return false;
+    }
+    displayedIds.add(anime.mal_id);
+    return true;
+  });
+
+  const uniqueUpcoming = upcomingAnime.filter(anime => {
+    if (displayedIds.has(anime.mal_id)) {
+      return false;
+    }
+    displayedIds.add(anime.mal_id);
+    return true;
+  });
 
   return (
     <div className="space-y-12">
