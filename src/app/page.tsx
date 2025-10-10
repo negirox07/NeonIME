@@ -66,12 +66,18 @@ export default async function HomePage() {
     getUpcomingAnime(),
   ]);
 
+  const uniqueTrending = trendingAnime;
+  const popularIds = new Set(uniqueTrending.map(a => a.mal_id));
+  const uniquePopular = popularAnime.filter(a => !popularIds.has(a.mal_id));
+  const upcomingIds = new Set([...uniqueTrending, ...uniquePopular].map(a => a.mal_id));
+  const uniqueUpcoming = upcomingAnime.filter(a => !upcomingIds.has(a.mal_id));
+
   return (
     <div className="space-y-12">
       <section>
         <h1 className="text-3xl font-bold mb-6 font-headline text-primary">Trending Now</h1>
-        {trendingAnime.length > 0 ? (
-          <AnimeGrid animeList={trendingAnime} />
+        {uniqueTrending.length > 0 ? (
+          <AnimeGrid animeList={uniqueTrending} />
         ) : (
           <p>Could not load trending anime. Please try again later.</p>
         )}
@@ -79,8 +85,8 @@ export default async function HomePage() {
 
       <section>
         <h2 className="text-3xl font-bold mb-6 font-headline text-primary">All-Time Popular</h2>
-        {popularAnime.length > 0 ? (
-          <AnimeGrid animeList={popularAnime} />
+        {uniquePopular.length > 0 ? (
+          <AnimeGrid animeList={uniquePopular} />
         ) : (
           <p>Could not load popular anime. Please try again later.</p>
         )}
@@ -88,8 +94,8 @@ export default async function HomePage() {
 
       <section>
         <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Top Upcoming</h2>
-        {upcomingAnime.length > 0 ? (
-          <AnimeGrid animeList={upcomingAnime} />
+        {uniqueUpcoming.length > 0 ? (
+          <AnimeGrid animeList={uniqueUpcoming} />
         ) : (
           <p>Could not load upcoming anime. Please try again later.</p>
         )}
