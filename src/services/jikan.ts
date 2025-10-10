@@ -1,4 +1,4 @@
-import type { JikanAPIResponse, Anime, Manga, Character, Person, Genre, Season, News, AnimeStatistics, StaffMember, AnimeRelation, AnimeTheme, AnimeEpisode, ForumTopic, AnimeVideo, ExternalLink, Picture, AnimeReview, MangaStatistics, MangaRecommendation, MangaRelation, CharacterAnime, CharacterManga, VoiceActor, PersonManga } from '@/lib/types';
+import type { JikanAPIResponse, Anime, Manga, Character, Person, Genre, Season, News, AnimeStatistics, StaffMember, AnimeRelation, AnimeTheme, AnimeEpisode, ForumTopic, AnimeVideo, ExternalLink, Picture, AnimeReview, MangaStatistics, MangaRecommendation, MangaRelation, CharacterAnime, CharacterManga, VoiceActor, PersonManga, AnimeCharacter } from '@/lib/types';
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
