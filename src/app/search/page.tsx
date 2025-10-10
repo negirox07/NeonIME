@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Skeleton } from '@/components/ui/skeleton';
+import RandomAd from '@/components/RandomAd';
 
 interface SearchPageProps {
   searchParams: {
@@ -77,6 +78,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <section>
+      <RandomAd />
       <h1 className="text-3xl font-bold mb-6 font-headline">
         {query ? (
           <>

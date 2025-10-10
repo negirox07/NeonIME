@@ -4,6 +4,7 @@ import { Nav } from '@/components/layout/nav';
 import { SearchInput } from '@/components/layout/search-input';
 import { Suspense } from 'react';
 import { MobileNav } from './mobile-nav';
+import AdSenseUnit from '../AdSenseUnit';
 
 export function Header() {
   return (
@@ -19,6 +20,7 @@ export function Header() {
             </Suspense>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
+        <AdSenseUnit adSlot="5342210952" autoMode='auto' />
           <Suspense fallback={<div />}>
             <SearchInput />
           </Suspense>

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import RandomAd from '@/components/RandomAd';
 
 interface PersonPageProps {
   params: {
@@ -51,6 +52,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
 
     return (
         <div className="space-y-12">
+            <RandomAd />
             <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="md:col-span-1">
                     <Image

@@ -5,6 +5,7 @@ import { Calendar } from 'lucide-react';
 import type { JikanAPIResponse, Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Skeleton } from '@/components/ui/skeleton';
+import RandomAd from '@/components/RandomAd';
 
 interface SeasonPageProps {
   params: {
@@ -64,6 +65,7 @@ export default async function SeasonPage({ params }: SeasonPageProps) {
 
   return (
     <section>
+      <RandomAd />
       <h1 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2 capitalize">
         <Calendar />
         {capitalizedSeason} {year} Season
