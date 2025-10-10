@@ -2,10 +2,11 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Calendar } from 'lucide-react';
-import type { JikanAPIResponse, Anime } from '@/lib/types';
+import type { Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import { Skeleton } from '@/components/ui/skeleton';
 import RandomAd from '@/components/RandomAd';
+import { getSeason as getSeasonAnimeData } from '@/services/jikan';
 
 interface SeasonPageProps {
   params: {
@@ -15,19 +16,8 @@ interface SeasonPageProps {
 }
 
 async function getSeasonAnime(year: string, season: string): Promise<Anime[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/seasons/${year}/${season}`);
-    if (!res.ok) {
-      if (res.status === 404) return [];
-      console.error(`Failed to fetch anime for ${year} ${season}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Anime[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching anime for ${year} ${season}:`, error);
-    return [];
-  }
+    const response = await getSeasonAnimeData(year, season);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: { params: SeasonPageProps['params'] }): Promise<Metadata> {

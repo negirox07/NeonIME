@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import RandomAd from '@/components/RandomAd';
+import { getMangaById } from '@/services/jikan';
 
 interface MangaPageProps {
   params: {
@@ -18,19 +19,8 @@ interface MangaPageProps {
 }
 
 async function getMangaDetails(id: string): Promise<Manga | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/full`);
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      console.error(`Failed to fetch manga ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<Manga> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching manga ${id}:`, error);
-    return null;
-  }
+    const response = await getMangaById(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: MangaPageProps): Promise<Metadata> {

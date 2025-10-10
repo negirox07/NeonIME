@@ -10,6 +10,7 @@ export const navItems = [
   { href: '/manga', label: 'Manga' },
   { href: '/characters', label: 'Characters' },
   { href: '/people', label: 'People' },
+  { href: '/genres', label: 'Genres' },
 ];
 
 export function Nav() {

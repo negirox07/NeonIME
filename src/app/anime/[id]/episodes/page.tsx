@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { EpisodeCard } from '@/components/anime/episode-card';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import RandomAd from '@/components/RandomAd';
+import { getAnimeById, getAnimeEpisodes as getEpisodes } from '@/services/jikan';
 
 
 interface EpisodesPageProps {
@@ -19,34 +20,13 @@ interface EpisodesPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeEpisodes(id: string, page: number = 1): Promise<JikanAPIResponse<AnimeEpisode[]> | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/episodes?page=${page}`);
-    if (!res.ok) {
-      console.error(`Failed to fetch episodes for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<AnimeEpisode[]> = await res.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching episodes for ${id}:`, error);
-    return null;
-  }
+  const response = await getEpisodes(id, page);
+  return response ?? null;
 }
 
 export async function generateMetadata({ params }: EpisodesPageProps): Promise<Metadata> {

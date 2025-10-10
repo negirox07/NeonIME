@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Video, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { JikanAPIResponse, Anime, AnimeVideo } from '@/lib/types';
+import type { Anime, AnimeVideo } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { VideoCard } from '@/components/anime/video-card';
+import { getAnimeById, getAnimeVideos as getVideos } from '@/services/jikan';
 
 interface VideosPageProps {
   params: {
@@ -13,34 +14,13 @@ interface VideosPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeVideos(id: string): Promise<AnimeVideo | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/videos`);
-    if (!res.ok) {
-      console.error(`Failed to fetch videos for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<AnimeVideo> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching videos for ${id}:`, error);
-    return null;
-  }
+    const response = await getVideos(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: VideosPageProps): Promise<Metadata> {

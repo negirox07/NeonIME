@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MessageSquare, ChevronLeft, ArrowRight } from 'lucide-react';
-import type { JikanAPIResponse, Manga, ForumTopic } from '@/lib/types';
+import type { Manga, ForumTopic } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { format } from 'date-fns';
+import { getMangaById, getMangaForum } from '@/services/jikan';
 
 interface ForumPageProps {
   params: {
@@ -14,34 +15,13 @@ interface ForumPageProps {
 }
 
 async function getMangaDetails(id: string): Promise<Manga | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch manga ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Manga> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching manga ${id}:`, error);
-      return null;
-    }
+    const response = await getMangaById(id);
+    return response?.data ?? null;
 }
 
 async function getForumTopics(id: string): Promise<ForumTopic[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/forum`);
-    if (!res.ok) {
-      console.error(`Failed to fetch forum topics for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<ForumTopic[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching forum topics for ${id}:`, error);
-    return [];
-  }
+    const response = await getMangaForum(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: ForumPageProps): Promise<Metadata> {

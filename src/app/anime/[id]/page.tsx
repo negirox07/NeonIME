@@ -4,14 +4,15 @@ import type { Metadata } from 'next';
 import { Star, Tv, Film, Calendar, BarChart as BarChartIcon, BookOpen, ThumbsUp, Users, Newspaper, Briefcase, Wand2, Link as LinkIcon, Music, Clapperboard, MessageSquare, Video, PlayCircle, Image as ImageIcon, StarHalf } from 'lucide-react';
 import { format } from 'date-fns';
 
-import type { JikanAPIResponse, Anime } from '@/lib/types';
+import type { Anime } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import RandomAd from '@/components/RandomAd';
+import { getAnimeById } from '@/services/jikan';
 
 interface AnimePageProps {
   params: {
@@ -20,19 +21,8 @@ interface AnimePageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/full`);
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<Anime> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching anime ${id}:`, error);
-    return null;
-  }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: AnimePageProps): Promise<Metadata> {
