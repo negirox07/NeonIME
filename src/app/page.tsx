@@ -3,6 +3,7 @@ import type { Anime } from '@/lib/types';
 import { AnimeGrid } from '@/components/anime/anime-grid';
 import RandomAd from '@/components/RandomAd';
 import { getTopAnime } from '@/services/jikan';
+import { Flame, Award, CalendarClock } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'NeonIME - Your Anime Universe',
@@ -61,7 +62,9 @@ export default async function HomePage() {
     <div className="space-y-12">
       <RandomAd />
       <section>
-        <h1 className="text-3xl font-bold mb-6 font-headline text-primary">Trending Now</h1>
+        <h1 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+          <Flame /> Trending Now
+        </h1>
         {uniqueTrending.length > 0 ? (
           <AnimeGrid animeList={uniqueTrending} />
         ) : (
@@ -70,7 +73,9 @@ export default async function HomePage() {
       </section>
 
       <section>
-        <h2 className="text-3xl font-bold mb-6 font-headline text-primary">All-Time Popular</h2>
+        <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+          <Award /> All-Time Popular
+        </h2>
         {uniquePopular.length > 0 ? (
           <AnimeGrid animeList={uniquePopular} />
         ) : (
@@ -79,7 +84,9 @@ export default async function HomePage() {
       </section>
 
       <section>
-        <h2 className="text-3xl font-bold mb-6 font-headline text-primary">Top Upcoming</h2>
+        <h2 className="text-3xl font-bold mb-6 font-headline text-primary flex items-center gap-2">
+          <CalendarClock /> Top Upcoming
+        </h2>
         {uniqueUpcoming.length > 0 ? (
           <AnimeGrid animeList={uniqueUpcoming} />
         ) : (
