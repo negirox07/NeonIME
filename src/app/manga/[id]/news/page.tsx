@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { getMangaById, getMangaNews as getNews } from '@/services/jikan';
 
 interface NewsPageProps {
   params: {
@@ -19,34 +20,13 @@ interface NewsPageProps {
 }
 
 async function getMangaDetails(id: string): Promise<Manga | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch manga ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Manga> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching manga ${id}:`, error);
-      return null;
-    }
+    const response = await getMangaById(id);
+    return response?.data ?? null;
 }
 
 async function getMangaNews(id: string, page: number = 1): Promise<JikanAPIResponse<News[]> | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/news?page=${page}`);
-    if (!res.ok) {
-      console.error(`Failed to fetch news for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<News[]> = await res.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching news for ${id}:`, error);
-    return null;
-  }
+    const response = await getNews(id, page);
+    return response ?? null;
 }
 
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {

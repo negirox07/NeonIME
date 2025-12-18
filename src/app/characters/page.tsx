@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Users } from 'lucide-react';
-import type { JikanAPIResponse, Character } from '@/lib/types';
+import type { Character } from '@/lib/types';
 import { CharacterCard } from '@/components/character/character-card';
 import RandomAd from '@/components/RandomAd';
+import { getTopCharacters as getCharacters } from '@/services/jikan';
 
 export const metadata: Metadata = {
     title: 'Top Characters - NeonIME',
@@ -11,18 +12,8 @@ export const metadata: Metadata = {
 };
 
 async function getTopCharacters(): Promise<Character[]> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/top/characters`);
-        if (!res.ok) {
-            console.error(`Failed to fetch top characters:`, res.status, await res.text());
-            return [];
-        }
-        const data: JikanAPIResponse<Character[]> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching top characters:`, error);
-        return [];
-    }
+    const response = await getCharacters();
+    return response?.data ?? [];
 }
 
 export default async function CharactersPage() {

@@ -158,9 +158,10 @@ export interface Person {
 
 export interface Genre {
   mal_id: number;
-  type: string;
+  type: 'genres' | 'explicit_genres' | 'themes' | 'demographics' | 'explicit';
   name: string;
   url: string;
+  count: number;
 }
 
 export interface AnimeRecommendation {

@@ -1,5 +1,6 @@
+"use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import GoogleAd from "./GoogleAd";
 
 const adConfigs = [
@@ -10,10 +11,20 @@ const adConfigs = [
 ];
 
 export default function RandomAd() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const randomConfig = useMemo(
     () => adConfigs[Math.floor(Math.random() * adConfigs.length)],
     []
   );
+
+  if (!isClient) {
+    return null;
+  }
 
   return <GoogleAd {...randomConfig} />;
 }

@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Calendar, ChevronRight, Snowflake, Sun, Leaf, Flower } from 'lucide-react';
-import type { JikanAPIResponse, Season } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Season } from '@/lib/types';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { getSeasonsList } from '@/services/jikan';
 
 export const metadata: Metadata = {
   title: 'Anime Seasons - NeonIME',
@@ -11,21 +12,10 @@ export const metadata: Metadata = {
 };
 
 async function getSeasons(): Promise<Season[]> {
-  try {
-    const res = await fetch('https://api.jikan.moe/v4/seasons', {
-      next: { revalidate: 86400 }, // Revalidate once a day
-    });
-    if (!res.ok) {
-      console.error('Failed to fetch seasons:', res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Season[]> = await res.json();
+    const response = await getSeasonsList();
+    const seasons = response?.data ?? [];
     // sort seasons descending by year
-    return data.data.sort((a, b) => b.year - a.year);
-  } catch (error) {
-    console.error('Error fetching seasons:', error);
-    return [];
-  }
+    return seasons.sort((a, b) => b.year - a.year);
 }
 
 const seasonStyles: { [key: string]: { icon: React.ElementType, style: string } } = {

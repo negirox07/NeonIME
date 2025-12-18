@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Clapperboard, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Character, CharacterAnime } from '@/lib/types';
+import type { Character, CharacterAnime } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AppearanceCard } from '@/components/character/appearance-card';
+import { getCharacterById, getCharacterAnime as getAnimeAppearances } from '@/services/jikan';
 
 interface CharacterAnimePageProps {
   params: {
@@ -13,34 +14,13 @@ interface CharacterAnimePageProps {
 }
 
 async function getCharacterDetails(id: string): Promise<Character | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch character ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Character> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching character ${id}:`, error);
-        return null;
-    }
+    const response = await getCharacterById(id);
+    return response?.data ?? null;
 }
 
 async function getCharacterAnime(id: string): Promise<CharacterAnime[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/anime`);
-    if (!res.ok) {
-      console.error(`Failed to fetch anime appearances for character ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<CharacterAnime[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching anime appearances for character ${id}:`, error);
-    return [];
-  }
+    const response = await getAnimeAppearances(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: CharacterAnimePageProps): Promise<Metadata> {

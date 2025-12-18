@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Wand2, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Anime, AnimeRecommendation } from '@/lib/types';
+import type { Anime, AnimeRecommendation } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AnimeGrid } from '@/components/anime/anime-grid';
+import { getAnimeById, getAnimeRecommendations as getRecommendations } from '@/services/jikan';
 
 interface RecommendationsPageProps {
   params: {
@@ -13,34 +14,13 @@ interface RecommendationsPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeRecommendations(id: string): Promise<AnimeRecommendation[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/recommendations`);
-    if (!res.ok) {
-      console.error(`Failed to fetch recommendations for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<AnimeRecommendation[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching recommendations for ${id}:`, error);
-    return [];
-  }
+    const response = await getRecommendations(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: RecommendationsPageProps): Promise<Metadata> {

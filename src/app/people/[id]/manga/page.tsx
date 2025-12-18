@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookOpen, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Person, PersonManga } from '@/lib/types';
+import type { Person, PersonManga } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PersonMangaCard } from '@/components/person/person-manga-card';
+import { getPersonById, getPersonManga as getMangaWorks } from '@/services/jikan';
 
 interface PersonMangaPageProps {
   params: {
@@ -13,34 +14,13 @@ interface PersonMangaPageProps {
 }
 
 async function getPersonDetails(id: string): Promise<Person | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/people/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch person ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Person> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching person ${id}:`, error);
-        return null;
-    }
+    const response = await getPersonById(id);
+    return response?.data ?? null;
 }
 
 async function getPersonManga(id: string): Promise<PersonManga[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/people/${id}/manga`);
-    if (!res.ok) {
-      console.error(`Failed to fetch manga for person ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<PersonManga[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching manga for person ${id}:`, error);
-    return [];
-  }
+    const response = await getMangaWorks(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: PersonMangaPageProps): Promise<Metadata> {

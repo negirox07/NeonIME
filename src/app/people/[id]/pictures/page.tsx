@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Image as ImageIcon, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Person, Picture } from '@/lib/types';
+import type { Person, Picture } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { getPersonById, getPersonPictures as getPictures } from '@/services/jikan';
 
 interface PicturesPageProps {
   params: {
@@ -13,34 +14,13 @@ interface PicturesPageProps {
 }
 
 async function getPersonDetails(id: string): Promise<Person | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/people/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch person ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Person> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching person ${id}:`, error);
-      return null;
-    }
+    const response = await getPersonById(id);
+    return response?.data ?? null;
 }
 
 async function getPersonPictures(id: string): Promise<Picture[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/people/${id}/pictures`);
-    if (!res.ok) {
-      console.error(`Failed to fetch pictures for person ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Picture[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching pictures for person ${id}:`, error);
-    return [];
-  }
+    const response = await getPictures(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: PicturesPageProps): Promise<Metadata> {

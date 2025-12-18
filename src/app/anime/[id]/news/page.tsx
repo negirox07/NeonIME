@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { getAnimeById, getAnimeNews as getNews } from '@/services/jikan';
 
 interface NewsPageProps {
   params: {
@@ -19,34 +20,13 @@ interface NewsPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getAnimeNews(id: string, page: number = 1): Promise<JikanAPIResponse<News[]> | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/news?page=${page}`);
-    if (!res.ok) {
-      console.error(`Failed to fetch news for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<News[]> = await res.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching news for ${id}:`, error);
-    return null;
-  }
+    const response = await getNews(id, page);
+    return response ?? null;
 }
 
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
@@ -120,7 +100,7 @@ export default async function NewsPage({ params, searchParams }: NewsPageProps) 
                                 <PaginationPrevious href={`/anime/${params.id}/news?page=${page - 1}`} />
                             </PaginationItem>
                         )}
-                        {Array.from({ length: pagination.last_visible_page }, (_, i) => i + 1).slice(0, 10).map(p => (
+                        {Array.from({ length: Math.min(pagination.last_visible_page, 10) }, (_, i) => i + 1).map(p => (
                             <PaginationItem key={p}>
                                 <PaginationLink href={`/anime/${params.id}/news?page=${p}`} isActive={p === page}>
                                     {p}

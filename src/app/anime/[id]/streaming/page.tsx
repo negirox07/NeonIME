@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PlayCircle, ChevronLeft, ArrowUpRight } from 'lucide-react';
-import type { JikanAPIResponse, Anime, ExternalLink } from '@/lib/types';
+import type { Anime, ExternalLink } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getAnimeById, getAnimeStreaming } from '@/services/jikan';
 
 interface StreamingPageProps {
   params: {
@@ -13,34 +14,13 @@ interface StreamingPageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getStreamingLinks(id: string): Promise<ExternalLink[]> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/streaming`);
-    if (!res.ok) {
-      console.error(`Failed to fetch streaming links for ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<ExternalLink[]> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching streaming links for ${id}:`, error);
-    return [];
-  }
+    const response = await getAnimeStreaming(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: StreamingPageProps): Promise<Metadata> {

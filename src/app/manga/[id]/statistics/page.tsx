@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BarChart as BarChartIcon, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Manga, MangaStatistics } from '@/lib/types';
+import type { Manga, MangaStatistics } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StatisticsChart } from '@/components/anime/statistics-chart';
+import { getMangaById, getMangaStatistics as getStatistics } from '@/services/jikan';
 
 interface StatisticsPageProps {
   params: {
@@ -13,34 +14,13 @@ interface StatisticsPageProps {
 }
 
 async function getMangaDetails(id: string): Promise<Manga | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch manga ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Manga> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching manga ${id}:`, error);
-      return null;
-    }
-  }
+    const response = await getMangaById(id);
+    return response?.data ?? null;
+}
 
 async function getMangaStatistics(id: string): Promise<MangaStatistics | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/statistics`);
-    if (!res.ok) {
-      console.error(`Failed to fetch statistics for ${id}:`, res.status, await res.text());
-      return null;
-    }
-    const data: JikanAPIResponse<MangaStatistics> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching statistics for ${id}:`, error);
-    return null;
-  }
+    const response = await getStatistics(id);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: { params: StatisticsPageProps['params'] }): Promise<Metadata> {

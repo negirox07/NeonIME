@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Briefcase, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Person } from '@/lib/types';
+import type { Person } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PersonAnimeCard } from '@/components/person/person-anime-card';
+import { getPersonById, getPersonAnime as getAnimeRoles } from '@/services/jikan';
 
 interface PersonAnimePageProps {
   params: {
@@ -13,34 +14,13 @@ interface PersonAnimePageProps {
 }
 
 async function getPersonDetails(id: string): Promise<Person | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/people/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch person ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Person> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching person ${id}:`, error);
-        return null;
-    }
+    const response = await getPersonById(id);
+    return response?.data ?? null;
 }
 
 async function getPersonAnime(id: string): Promise<Person['anime']> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/people/${id}/anime`);
-    if (!res.ok) {
-      console.error(`Failed to fetch anime staff roles for person ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Person['anime']> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching anime staff roles for person ${id}:`, error);
-    return [];
-  }
+    const response = await getAnimeRoles(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: PersonAnimePageProps): Promise<Metadata> {

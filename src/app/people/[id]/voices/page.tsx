@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Mic2, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Person } from '@/lib/types';
+import type { Person } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PersonVoiceRoleCard } from '@/components/person/person-voice-role-card';
+import { getPersonById, getPersonVoices as getVoices } from '@/services/jikan';
 
 interface PersonVoicesPageProps {
   params: {
@@ -13,34 +14,13 @@ interface PersonVoicesPageProps {
 }
 
 async function getPersonDetails(id: string): Promise<Person | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/people/${id}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch person ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<Person> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching person ${id}:`, error);
-        return null;
-    }
+    const response = await getPersonById(id);
+    return response?.data ?? null;
 }
 
 async function getPersonVoices(id: string): Promise<Person['voices']> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/people/${id}/voices`);
-    if (!res.ok) {
-      console.error(`Failed to fetch voice roles for person ${id}:`, res.status, await res.text());
-      return [];
-    }
-    const data: JikanAPIResponse<Person['voices']> = await res.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching voice roles for person ${id}:`, error);
-    return [];
-  }
+    const response = await getVoices(id);
+    return response?.data ?? [];
 }
 
 export async function generateMetadata({ params }: PersonVoicesPageProps): Promise<Metadata> {

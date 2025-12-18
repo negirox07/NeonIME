@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Tv, Calendar, Star, ChevronLeft } from 'lucide-react';
-import type { JikanAPIResponse, Anime, AnimeEpisode } from '@/lib/types';
+import type { Anime, AnimeEpisode } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import RandomAd from '@/components/RandomAd';
+import { getAnimeById, getAnimeEpisodeDetails } from '@/services/jikan';
 
 interface EpisodePageProps {
   params: {
@@ -16,35 +17,13 @@ interface EpisodePageProps {
 }
 
 async function getAnimeDetails(id: string): Promise<Anime | null> {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        console.error(`Failed to fetch anime ${id}:`, res.status, await res.text());
-        return null;
-      }
-      const data: JikanAPIResponse<Anime> = await res.json();
-      return data.data;
-    } catch (error) {
-      console.error(`Error fetching anime ${id}:`, error);
-      return null;
-    }
+    const response = await getAnimeById(id);
+    return response?.data ?? null;
 }
 
 async function getEpisodeDetails(id: string, episode: string): Promise<AnimeEpisode | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${id}/episodes/${episode}`);
-        if (!res.ok) {
-            if (res.status === 404) return null;
-            console.error(`Failed to fetch episode ${episode} for anime ${id}:`, res.status, await res.text());
-            return null;
-        }
-        const data: JikanAPIResponse<AnimeEpisode> = await res.json();
-        return data.data;
-    } catch (error) {
-        console.error(`Error fetching episode ${episode} for anime ${id}:`, error);
-        return null;
-    }
+    const response = await getAnimeEpisodeDetails(id, episode);
+    return response?.data ?? null;
 }
 
 export async function generateMetadata({ params }: EpisodePageProps): Promise<Metadata> {
