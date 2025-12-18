@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://api.jikan.moe/v4';
 async function fetchJikanAPI<T>(endpoint: string): Promise<T | null> {
     try {
         await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
-        const res = await fetch(`${API_BASE_URL}/${endpoint}`);
+        const res = await fetch(`${API_BASE_URL}/${endpoint}`, { next: { revalidate: 3600 } }); // Cache for 1 hour
         if (!res.ok) {
             if (res.status === 404) return null;
             console.error(`Failed to fetch ${endpoint}:`, res.status, await res.text());
